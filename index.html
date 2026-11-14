@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语境差 Context Gap · 出海文案语境校对</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --panel:#ffffff; --line:#d5dbe3; --soft:#f7f8fa;
+    --text:#16202e; --muted:#4f5c6b; --accent:#2f4d7c;
+    --pass:#2e7d5b; --warn:#9a6b1c; --danger:#a8443c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh;color:var(--text);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg);padding:34px 20px 60px;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+  header{margin-bottom:22px}
+  .eyebrow{color:var(--accent);font-size:12.5px;font-weight:700;letter-spacing:.12em;
+           text-transform:uppercase;margin-bottom:10px}
+  h1{font-size:34px;letter-spacing:.02em;font-weight:700}
+  h1 small{font-size:15px;color:var(--muted);font-weight:400;margin-left:12px;letter-spacing:.08em}
+  .sub{color:var(--muted);margin-top:9px;font-size:14px;line-height:1.7}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .stat{font-size:11.5px;color:var(--muted);background:var(--panel);
+        border:1px solid var(--line);border-radius:4px;padding:5px 12px}
+  .stat b{color:var(--accent);font-weight:600}
+  .grid{display:grid;grid-template-columns:370px 1fr;gap:20px;align-items:start}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:22px}
+  label{display:block;font-size:13px;font-weight:700;color:var(--text);margin:0 0 9px;
+        letter-spacing:.02em;padding-left:10px;border-left:3px solid var(--accent)}
+  textarea,select{
+    width:100%;background:var(--soft);border:1px solid var(--line);border-radius:4px;
+    color:var(--text);padding:12px 14px;font-size:14px;line-height:1.7;outline:none;font-family:inherit;
+  }
+  textarea{height:126px;resize:vertical}
+  textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,77,124,.12)}
+  .row{margin-bottom:16px}
+  button.primary{
+    width:100%;padding:13px;border:0;border-radius:4px;cursor:pointer;font-size:15px;font-weight:600;
+    color:#ffffff;background:var(--accent);transition:background .2s;
+  }
+  button.primary:hover{background:#254064}
+  .section{margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+  .section>p{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:10px;
+             line-height:1.6;padding-left:10px;border-left:3px solid var(--accent)}
+  .chip{
+    display:block;width:100%;text-align:left;margin-bottom:7px;padding:9px 11px;font-size:12.5px;
+    color:var(--muted);background:var(--soft);border:1px solid var(--line);
+    border-radius:4px;cursor:pointer;transition:.15s;font-family:inherit;line-height:1.5;
+  }
+  .chip:hover{color:var(--text);border-color:var(--accent)}
+  .result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .badge{padding:7px 15px;border-radius:4px;font-size:13px;font-weight:700;letter-spacing:.02em}
+  .badge.pass{background:#eaf4ee;color:var(--pass);border:1px solid #bcd9c8}
+  .badge.warn{background:#fbf3e2;color:var(--warn);border:1px solid #e6d2a8}
+  .badge.danger{background:#fdecec;color:var(--danger);border:1px solid #e6c0bc}
+  .meta{font-size:11.5px;color:var(--muted)}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .tag{font-size:11px;color:var(--accent);background:#eef2f8;
+       border:1px solid #ccd7e6;border-radius:4px;padding:4px 9px}
+  .tag.sig{color:var(--warn);background:#fbf3e2;border-color:#e6d2a8}
+  .stance{border-left:3px solid var(--accent);background:var(--soft);
+          border-radius:0 4px 4px 0;padding:10px 13px;margin-bottom:14px;font-size:12px;line-height:1.75}
+  .stance b{display:block;color:var(--accent);font-size:12.5px;margin-bottom:3px}
+  .stance span{color:var(--muted)}
+  .conf{font-size:11.5px;line-height:1.7;color:#8a6118;background:#fbf3e2;
+        border:1px solid #e6d2a8;border-radius:4px;padding:9px 12px;margin-bottom:14px}
+  .block{margin-bottom:17px}
+  .block h3{font-size:14.5px;font-weight:700;color:var(--accent);margin-bottom:10px;
+            letter-spacing:.02em;display:flex;align-items:center;gap:9px}
+  .block h3::before{content:"";width:4px;height:15px;background:var(--accent);border-radius:1px}
+  .block ul{list-style:none}
+  .block li{font-size:13.5px;line-height:1.75;padding:8px 0 8px 16px;position:relative;
+            border-bottom:1px dashed var(--line)}
+  .block li:last-child{border-bottom:0}
+  .block li::before{content:"\00b7";position:absolute;left:2px;color:var(--accent);font-weight:700}
+  .block.risk h3,.block.risk li::before{color:var(--danger)}
+  .block.risk h3::before{background:var(--danger)}
+  .rewrite{font-size:14px;line-height:1.8;padding:14px 16px;border-radius:4px;
+           background:var(--soft);border-left:3px solid var(--accent)}
+  .empty{color:var(--muted);font-size:13px;line-height:1.7}
+  details{border-top:1px solid var(--line);padding-top:13px;margin-top:4px}
+  summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+  details a{display:block;color:var(--accent);font-size:12px;margin-top:9px;text-decoration:none;word-break:break-all;line-height:1.6}
+  details a:hover{text-decoration:underline}
+  .lib a{font-size:11.5px;color:var(--muted);display:block;margin-top:8px;line-height:1.6}
+  .lib a:hover{color:var(--accent)}
+  .actions{display:flex;gap:9px;margin-top:16px}
+  .actions button{flex:1;padding:10px;font-size:12.5px;border-radius:4px;cursor:pointer;
+    color:var(--text);background:var(--soft);border:1px solid var(--line);font-family:inherit}
+  .actions button:hover{border-color:var(--accent);color:var(--accent)}
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);
+    background:#243a5e;color:#ffffff;border:1px solid var(--accent);
+    padding:10px 20px;border-radius:4px;font-size:13px;opacity:0;transition:.25s;pointer-events:none}
+  .toast.show{opacity:1}
+  button.primary.done{background:var(--pass);color:#ffffff}
+  button.primary:disabled{cursor:default}
+  #result{scroll-margin-top:18px}
+  #result.flash{animation:resultFlash 1.1s ease-out}
+  @keyframes resultFlash{
+    0%{box-shadow:0 0 0 2px rgba(47,77,124,.55);border-color:var(--accent);background:#eef2f8}
+    70%{box-shadow:0 0 0 2px rgba(47,77,124,.22);border-color:var(--accent)}
+    100%{box-shadow:0 0 0 0 rgba(47,77,124,0);border-color:var(--line);background:var(--panel)}
+  }
+  @media(prefers-reduced-motion:reduce){#result.flash{animation:none}}
+  footer{margin-top:24px;text-align:center;color:var(--muted);font-size:11.5px;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI × 出海 · 知乎黑客松 S3</div>
+    <h1>语境差 <small>Context Gap</small></h1>
+    <p class="sub">不是翻译，也不是润色。把中文文案里那些<strong>因为太理所当然、所以从没被写下来的前提</strong>翻出来，并告诉你目标市场会怎么误读。</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <div class="row">
+        <label for="text">中文文案</label>
+        <textarea id="text">白象，纯净可靠，值得信赖</textarea>
+      </div>
+      <div class="row">
+        <label for="market">目标市场</label>
+        <select id="market">
+          <option value="欧美" selected>欧美 · 跨文化</option>
+          <option value="中东">中东 · 异质文化圈</option>
+          <option value="东南亚">东南亚 · 部分共通</option>
+          <option value="港澳">港澳 · 同文化圈</option>
+        </select>
+      </div>
+      <button class="primary" id="run">开始语境校对</button>
+
+      <div class="section">
+        <p>点样例，再切换市场看结论翻转</p>
+        <div id="chips"></div>
+      </div>
+
+      <div class="section lib">
+        <details>
+          <summary>公开案例库（可溯源出处，<span id="libcount"></span> 条）</summary>
+          <div id="lib"></div>
+        </details>
+      </div>
+    </section>
+
+    <section class="card" id="result">
+      <div class="empty">左侧填入文案并选择市场，点「开始语境校对」。</div>
+    </section>
+  </div>
+
+  <footer>
+    规则引擎离线可用、结论可溯源 · 接入知乎开放平台与模型后自动增强<br>
+    密钥仅存于后端环境变量，前端不可见
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CASES = [{"id": "white-elephant", "match": "白象", "title": "白象，纯净可靠，值得信赖", "markets": {"欧美": {"level": "danger", "premises": ["「白象」在中文里天然带洁净、祥瑞、可靠的褒义，中文用户不需要任何解释就能接受，所以文案里从没解释过它为什么吉祥", "默认以祥瑞动物命名品牌是放之四海皆准的命名惯例", "默认动物意象的褒贬可以随翻译一起迁移到另一种语言"], "risks": ["White Elephant 是英语固定短语，意为「大而无用、养着累赘、弃之可惜的东西」，与「可靠」直接语义冲突，品牌名反而在劝退", "同类直译事故：蓝天牌牙膏 Blue Sky 在美国指「收不回来的债券」、芳芳爽身粉 Fang Fang 里的 fang 是毒牙、金鸡鞋油 Golden Cock 应改 Golden Rooster", "品牌名一经注册很难更改，属于上线前必须拦下的错误，而非上线后可优化的文案问题"], "rewrite": "改用音译或换意象（如 BaiXiang / Pure & Reliable），英文名中不要出现 elephant；若要保留祥瑞感，改用目标市场能读通的符号并在文案中把褒义明说出来。", "faq": ["为什么一个电池品牌要叫「累赘」？", "这是清仓或二手商品吗？", "品牌名到底是什么意思？"], "sources": [{"title": "央视网《国际品牌商标设计禁忌》", "url": "https://www.cctv.com/brand/20060710/102157.shtml", "snippet": "白象牌电池在东南亚畅销，在欧美无人问津，因 White Elephant 意为累赘无用之物"}, {"title": "中国青年报《出口，商品要过名称关》", "url": "https://zqb.cyol.com/content/2002-06/10/content_466462.htm", "snippet": "White Elephant 在西欧意味着累赘而无用的东西；Blue Sky 是不能兑现的证券"}]}, "东南亚": {"level": "pass", "premises": ["「白象」在中文里承载洁净、吉祥、可靠的正面联想，且这个联想不需要写出理由", "默认祥瑞动物可以作为品牌名的正当来源"], "risks": ["风险低：泰国、印度、缅甸等地本就把白象视为神圣吉祥之物，褒义能被直接接收", "但白象在部分东南亚国家与王室、佛教典故相关，避免用于戏谑、打折促销或拟人化调侃"], "rewrite": "保留「白象」意象即可，可补一句当地语境能共鸣的吉祥表达；不必更换名词。", "faq": ["白象和当地的佛教典故有关吗？", "这是本地品牌还是进口品牌？", "「纯净可靠」有第三方认证吗？"], "sources": [{"title": "央视网《国际品牌商标设计禁忌》", "url": "https://www.cctv.com/brand/20060710/102157.shtml", "snippet": "白象是东南亚地区的吉祥之物，白象牌电池在当地十分畅销"}]}, "港澳": {"level": "pass", "premises": ["「白象」的祥瑞、洁净联想在港澳与内地一致，读者直接就能理解，无需解释", "港澳读者同时熟悉中英双语，能读懂字面吉祥义"], "risks": ["风险低，但港澳商业文案常中英并列，若同时标出 White Elephant 仍可能触发英语负面联想，建议英文部分另起名"], "rewrite": "中文保留「白象」，英文副标题另用 BaiXiang 或 Pure & Reliable，不要直译。", "faq": ["中英文品牌名为什么不一样？", "和泰国的白象典故是同一个吗？", "有哪些质量认证？"], "sources": [{"title": "北京市社科联《中国广告语言国际化的文化适应案例分析》", "url": "https://www.bjsk.org.cn/detail-1395-1477-9538.html", "snippet": "白象在汉语中有干净可靠的隐含意义，直译 white elephant 则导致销路不畅"}]}, "中东": {"level": "warn", "premises": ["「白象」在中文里天然带洁净、祥瑞、可靠的褒义，这个联想不需要写出理由", "默认祥瑞动物可以直接拿来给品牌命名", "默认动物意象的褒贬可以随翻译一起迁移到别的市场"], "risks": ["这份祥瑞寓意在当地没有对应概念，读者只会看到一个动物名，不会调出「可靠」的联想；动物形象素材还需核对宗教与生活禁忌", "英文名若沿用 White Elephant，在商务英语里仍是「大而无用、养着累赘」的固定说法，与「可靠」直接冲突"], "rewrite": "中文把「纯净可靠」明写出来，不要指望意象自带褒义；英文名另起一个在英语与当地语言里都无歧义的名称，并请本地合规人员核对素材。", "faq": ["为什么一个电池品牌要叫「累赘」？", "这是清仓或二手商品吗？", "品牌名到底是什么意思？"], "sources": [{"title": "央视网《国际品牌商标设计禁忌》", "url": "https://www.cctv.com/brand/20060710/102157.shtml", "snippet": "白象牌电池在东南亚畅销，在欧美无人问津，因 White Elephant 意为累赘无用之物"}, {"title": "中国青年报《出口，商品要过名称关》", "url": "https://zqb.cyol.com/content/2002-06/10/content_466462.htm", "snippet": "White Elephant 在西欧意味着累赘而无用的东西；Blue Sky 是不能兑现的证券"}]}}}, {"id": "group-buy", "match": "砍一刀", "title": "拼团砍一刀，9.9 包邮，家人们冲！", "markets": {"欧美": {"level": "danger", "premises": ["默认「找朋友帮忙砍价」是正向的熟人互动，而不是对社交关系的消耗", "默认「9.9」是不需要解释的价格锚点，读者自动脑内有参照系", "默认「家人们」这类亲昵称谓能拉近距离，而不会被读成冒犯或过度亲密", "默认低价带来的第一反应是「划算」，而不是「质量可疑」"], "risks": ["强迫分享式裂变在欧美易被读成 spam / 社交绑架，甚至触发平台对诱导分享的限制", "超低价若无品质叙事支撑，会被直接归到「便宜没好货」，与国内「薅羊毛」的正向情绪相反", "「砍一刀」直译成 cut one knife 语义完全不通，属于机制层面的不可译"], "rewrite": "把「省钱」重构成目标市场能共鸣的身份感而非砍价动作，例如 Shop like a billionaire；把裂变换成无需人情负担的现金返利（Referral Bonus）与游戏化界面，并补一句品质/履约说明。", "faq": ["为什么我必须分享给朋友才能拿到这个价？", "这么便宜，质量有保障吗？", "多久能送到、能退吗？"], "sources": [{"title": "Temu 超级碗广告案例：Shop like a Billionaire", "url": "https://m.10100.com/article/5205172", "snippet": "未照搬国内砍一刀，改用 Referral Bonus 现金返利与游戏化界面适配北美习惯"}, {"title": "OC&C：中企本土化挑战（快手照搬老铁文化在韩国遇冷）", "url": "https://www.sgpjbg.com/labels/zhongqibentuhuatiaozhan/1/7500783.html", "snippet": "快手国际业务团队都在中国，盲目复刻老铁文化，在韩国等地水土不服"}]}, "东南亚": {"level": "warn", "premises": ["默认熟人裂变与群聊分享是自然的购物路径", "默认 9.9 这类极低价格锚点无需换算与解释"], "risks": ["东南亚多国价格敏感度与币种差异大，直接搬人民币价格锚点会失真，需换算并本地化定价", "部分市场以货到付款、社媒私聊下单为主，「App 内拼团」这一动作本身可能不成立"], "rewrite": "保留热闹的社群感，但把价格换成本地币种与本地参照物，并把拼团入口放到当地主流社媒链路里。", "faq": ["这个价格是本地货币吗？", "可以货到付款吗？", "要拉几个人才能成团？"], "sources": [{"title": "OC&C：中企本土化挑战（白象泰国口味、元气森林印尼清真气泡水）", "url": "https://www.sgpjbg.com/labels/zhongqibentuhuatiaozhan/1/7500783.html", "snippet": "白象在泰国主推鸡汤猪骨汤面却遇当地嗜甜嗜辣；元气森林按市场调整产品组合并在印尼推清真气泡水"}]}, "港澳": {"level": "warn", "premises": ["默认简体中文网络用语（家人们、冲）在港澳同样自然", "默认包邮与内地物流时效是共识"], "risks": ["港澳惯用繁体与粤语口语，「家人们」「冲」会显得是外来广告，距离感反而变大", "「包邮」需说明是否含跨境段与关税，否则易生纠纷"], "rewrite": "转繁体并改用本地口语，把运费与关税条款明写出来。", "faq": ["係繁体定简体？", "包邮包唔包跨境运费？", "几多日送到？"], "sources": []}, "中东": {"level": "warn", "premises": ["默认「找朋友帮忙砍价」是正向的熟人互动，而不是对社交关系的消耗", "默认 9.9 这类人民币价格锚点不需要换算与解释", "默认「家人们」这类亲昵称谓能拉近距离"], "risks": ["熟人裂变与「砍一刀」是内地平台玩法，当地没有对应链路；货到付款占比高，且需换算本地币种并写清关税与跨境运费", "强推式 CTA 与「家人们」直译后容易显得过度亲密，部分市场对诱导分享与绝对化促销另有广告规管"], "rewrite": "换算本地币种、支持货到付款，把「省钱」写成具体理由而非砍价动作；改用当地通用的礼貌称呼，促销时间避开宗教节日并做合规核对。", "faq": ["为什么我必须分享给朋友才能拿到这个价？", "这么便宜，质量有保障吗？", "多久能送到、能退吗？"], "sources": [{"title": "Temu 超级碗广告案例：Shop like a Billionaire", "url": "https://m.10100.com/article/5205172", "snippet": "未照搬国内砍一刀，改用 Referral Bonus 现金返利与游戏化界面适配北美习惯"}, {"title": "OC&C：中企本土化挑战（快手照搬老铁文化在韩国遇冷）", "url": "https://www.sgpjbg.com/labels/zhongqibentuhuatiaozhan/1/7500783.html", "snippet": "快手国际业务团队都在中国，盲目复刻老铁文化，在韩国等地水土不服"}]}}}, {"id": "chopsticks", "match": "筷子", "title": "添双筷子，就是添一份团圆", "markets": {"欧美": {"level": "warn", "premises": ["默认「筷子」不只是餐具，它承载传承、血脉亲情与待客之道——央视公益广告《一双筷子》正是把「添双筷子」等同于人情温暖", "默认「团圆」是无需解释的最高正向价值，读者会自动补上家庭、节庆、归乡的整套画面", "默认这种以物寄情的含蓄表达能被另一种语言原样接收"], "risks": ["译成 chopsticks / two sticks 后只剩 utensil，亲情、团圆、待客三层语义全部丢失，只剩一句莫名其妙的「多摆一副餐具」", "若再配上「教人怎么使用这种小棍子」式的说明语气，容易被读成俯视与猎奇，反而冒犯", "以物寄情的含蓄在偏直白的广告语境里常被判定为「没说清楚卖点」"], "rewrite": "把情感负载明说出来，例如 There's always a seat at the table for you，再补一句产品场景；不要只替换名词，要替读者补上中文里省略的那层关系。", "faq": ["所以这是在卖筷子，还是在讲一个家庭故事？", "「团圆」具体指什么场合？", "为什么多一双筷子就等于多一个人？"], "sources": [{"title": "中国日报《筷子仅仅是个餐具？D&G，那是你不懂中国》", "url": "https://language.chinadaily.com.cn/a/201811/23/WS5bf7dcc5a310eff30328ac1d.html", "snippet": "央视《一双筷子》公益广告：筷子承载文化传承、血脉亲情，添双筷子是人情温暖"}, {"title": "北京市社科联《中国广告语言国际化的文化适应案例分析》", "url": "https://www.bjsk.org.cn/detail-1395-1477-9538.html", "snippet": "龙、白象等意象在中西文化中的联想差异，广告语需做文化适应"}]}, "东南亚": {"level": "warn", "premises": ["默认华人圈共通的「添筷＝添人」家庭意象可被直接接收", "默认「团圆」与华人节庆绑定"], "risks": ["华人社群能读懂，但非华裔主流受众未必共享这套意象；多族群市场需补一句情境说明", "部分市场餐具习惯不同，把筷子当作普适家庭符号会显得以单一文化为中心"], "rewrite": "保留意象，同时把「多一个人、多一份热闹」的情境明写出来，让不同族群读者都能进入。", "faq": ["这是华人节庆的广告吗？", "为什么用筷子不用别的餐具？", "「团圆」指的是哪个节日？"], "sources": []}, "港澳": {"level": "pass", "premises": ["「添双筷子」的人情与团圆语义在港澳与内地完全共通，无需解释", "以物寄情的含蓄表达是本地广告里被接受的常规手法"], "risks": ["风险低；只需转繁体并留意粤语口语节奏"], "rewrite": "转为繁体即可保留原句：「添雙筷子，就係添一份團圓」。", "faq": ["係邊個節日嘅廣告？", "有冇其他產品？", "邊度買得到？"], "sources": []}, "中东": {"level": "warn", "premises": ["默认「筷子」不只是餐具，它承载传承、血脉亲情与待客之道", "默认「添双筷子＝添一个人」这层人情不需要解释", "默认这种以物寄情的含蓄表达能被别的市场原样接收"], "risks": ["转译后只剩一件器物，人情、团圆、待客三层语义全部读不到；当地同样重视家庭与待客，但需要用直白场景才能唤出", "以物寄情的含蓄表达在跨语言后容易被读成「看不出这是什么产品」"], "rewrite": "把「多一个人、多一份热闹」的待客场景直接写出来，例如「总有一个位置留给你」，再补一句产品场景；不要只保留器物名。", "faq": ["所以这是在卖筷子，还是在讲一个家庭故事？", "「团圆」具体指什么场合？", "为什么多一双筷子就等于多一个人？"], "sources": [{"title": "中国日报《筷子仅仅是个餐具？D&G，那是你不懂中国》", "url": "https://language.chinadaily.com.cn/a/201811/23/WS5bf7dcc5a310eff30328ac1d.html", "snippet": "央视《一双筷子》公益广告：筷子承载文化传承、血脉亲情，添双筷子是人情温暖"}, {"title": "北京市社科联《中国广告语言国际化的文化适应案例分析》", "url": "https://www.bjsk.org.cn/detail-1395-1477-9538.html", "snippet": "龙、白象等意象在中西文化中的联想差异，广告语需做文化适应"}]}}}];
+const RULES = [{"id": "blue-sky", "keywords": ["蓝天"], "premise": "「蓝天」在中文里是开阔、干净、自由的天然褒义，用作品牌名时从不需要解释这份联想。", "markets": {"欧美": {"level": "danger", "reading": "Blue Sky 在美国金融语境里指「收不回来的债券 / 无法兑现的证券」，与可靠感冲突。", "fix": "换英文名或改用音译，别把蓝天直译成 Blue Sky 做品牌名。"}, "default": {"level": "warn", "reading": "需确认当地英语金融语境是否会触发负面联想。", "fix": "品牌名优先音译，把「干净开阔」的含义写进文案而不是名字里。"}}, "faq": ["品牌名和金融产品有关系吗？", "这是本地注册的品牌吗？", "名字有什么含义？"], "sources": [{"title": "中国青年报《出口，商品要过名称关》", "url": "https://zqb.cyol.com/content/2002-06/10/content_466462.htm", "snippet": "蓝天牌牙膏英译 Blue Sky 在美国指不能兑现的证券"}], "class": "brand"}, {"id": "fangfang", "keywords": ["芳芳"], "premise": "「芳芳」是中文里典型的柔美叠字小名，默认传达香气、可爱与亲昵。", "markets": {"欧美": {"level": "danger", "reading": "用拼音 Fang Fang 出口时，fang 在英语里是「毒牙 / 犬牙」，婴幼儿用品尤其容易引发恐惧联想。", "fix": "不要用拼音做出口品名，另取一个在目标语言里无歧义的名称。"}, "default": {"level": "warn", "reading": "拼音在目标语言里往往不承载语义，容易按当地读音被误读。", "fix": "改用有明确正面含义的本地化名称。"}}, "faq": ["这个名字怎么念？", "是给婴儿用的吗？", "为什么用拼音做品牌名？"], "sources": [{"title": "中国青年报《出口，商品要过名称关》", "url": "https://zqb.cyol.com/content/2002-06/10/content_466462.htm", "snippet": "芳芳牌爽身粉以 Fang Fang 出口，fang 意为毒蛇牙、狗牙"}], "class": "brand"}, {"id": "golden-cock", "keywords": ["金鸡", "公鸡"], "premise": "鸡在中文里象征勤奋、报晓、吉祥，「金鸡」是理所当然的褒义品牌名。", "markets": {"欧美": {"level": "danger", "reading": "Golden Cock 里的 cock 在英语口语中有粗俗含义，会显得品牌缺乏修养。", "fix": "把 cock 换成 rooster，或整体另起名。"}, "default": {"level": "warn", "reading": "动物类品牌名直译常带意外歧义。", "fix": "改用 rooster 或音译。"}}, "faq": ["为什么用公鸡做标志？", "这个英文名是故意的吗？", "品牌想表达什么？"], "sources": [{"title": "央广网《品牌折射出的中西方文化差异》", "url": "https://www.cnr.cn/advertising/ywyj/201210/t20121015_511127930.html", "snippet": "Golden Cock 直译犯语用错误，应改 Golden Rooster"}], "class": "brand"}, {"id": "flying-pigeon", "keywords": ["飞鸽", "白翎"], "premise": "「飞鸽」用「飞」暗示性能、「鸽」暗示和平，中文读者会自动补全这套美好联想。", "markets": {"欧美": {"level": "warn", "reading": "pigeon 在英语里多指供食用/赛飞的鸽子，象征和平的是 dove；White Feather 更有「临阵脱逃、胆小鬼」的成语含义。", "fix": "改用 dove，羽毛意象整体更换。"}, "default": {"level": "warn", "reading": "鸟类意象的褒贬在不同语言里不对应。", "fix": "换用目标市场认可的象征物。"}}, "faq": ["为什么选这个动物？", "它象征什么？", "和当地文化有关吗？"], "sources": [{"title": "新浪财经《商标译名：企业走出国门的拦路虎》", "url": "https://finance.sina.cn/sa/2006-09-15/detail-ikftssap1110466.d.html", "snippet": "Flying Pigeon 用了食用鸽 pigeon，White Feather 意为临阵脱逃"}], "class": "brand"}, {"id": "dragon", "keywords": ["龙牌", "望子成龙", "龙凤", "祥龙", "龙纹", "金龙", "龙的传人"], "premise": "「龙」在中文里是权威、神圣、吉祥的符号，「望子成龙」等成语默认这份共识，文案从不需要解释。", "markets": {"欧美": {"level": "danger", "reading": "dragon 在英美文化里多为凶残、需被斩杀的怪物，褒义直接反转。", "fix": "用音译 long / Loong，或换成目标市场认可的正面意象，别直译 dragon。"}, "default": {"level": "warn", "reading": "华人圈能接收，非华裔受众未必共享这套联想。", "fix": "保留意象但补一句情境说明。"}}, "faq": ["为什么用龙做标志？", "这个符号在当地有什么含义？", "是神话形象还是品牌吉祥物？"], "sources": [{"title": "北京市社科联《中国广告语言国际化的文化适应案例分析》", "url": "https://www.bjsk.org.cn/detail-1395-1477-9538.html", "snippet": "龙在汉语中是权威神圣，在英美文化里是凶残象征，宜音译 long"}], "class": "culture"}, {"id": "lotus", "keywords": ["荷花", "莲花"], "premise": "荷花在中文里是「出淤泥而不染」的纯洁高雅象征，用作图案或品牌名时默认褒义。", "markets": {"欧美": {"level": "warn", "reading": "在日本，荷花是死亡象征，一般只在葬礼使用；部分欧洲市场也与哀悼关联。", "fix": "面向日本市场避免荷花图案与命名，换用当地接受的植物意象。"}, "default": {"level": "warn", "reading": "花卉的哀悼/喜庆含义在不同市场差异很大。", "fix": "先核对目标市场的花卉礼仪含义再定视觉。"}}, "faq": ["这个花纹是什么场合用的？", "为什么选荷花？", "有别的图案版本吗？"], "sources": [{"title": "新浪财经《商标译名：企业走出国门的拦路虎》", "url": "https://finance.sina.cn/sa/2006-09-15/detail-ikftssap1110466.d.html", "snippet": "荷花在中国象征纯洁，在日本是死亡的象征，葬礼才使用"}], "class": "culture"}, {"id": "peacock-crane", "keywords": ["孔雀", "仙鹤", "鹿"], "premise": "孔雀、仙鹤、鹿在中文里分别是美丽、长寿、祥瑞的象征，视觉素材默认可以放心用。", "markets": {"欧美": {"level": "danger", "reading": "孔雀与仙鹤在法国有淫妇、蠢汉的贬义，鹿在巴西是同性恋的俗称，褒义完全反转。", "fix": "视觉素材按目标市场重选，不要直接复用国内素材库。"}, "default": {"level": "warn", "reading": "动物联想跨文化差异极大，沿用国内素材有风险。", "fix": "请本地读者过一遍视觉素材。"}}, "faq": ["这个动物图案有什么寓意？", "是本地设计吗？", "为什么选这个形象？"], "sources": [{"title": "央视网《国际品牌商标设计禁忌》", "url": "https://www.cctv.com/brand/20060710/102157.shtml", "snippet": "鹿在巴西是同性恋俗称，孔雀在法国是淫妇别称，仙鹤在法国是蠢汉代名词"}], "class": "culture"}, {"id": "panda", "keywords": ["熊猫"], "premise": "熊猫是国宝，默认在任何市场都是可爱、无害、讨喜的正向符号。", "markets": {"欧美": {"level": "pass", "reading": "多数欧美市场接受度良好。", "fix": "可直接使用。"}, "default": {"level": "warn", "reading": "部分穆斯林国家因熊猫外形似猪而忌讳，宗教市场需回避。", "fix": "面向宗教敏感市场改用其他形象。"}}, "faq": ["熊猫和当地有什么关联吗？", "这是中国品牌吗？", "有别的吉祥物吗？"], "sources": [{"title": "新浪财经《商标译名：企业走出国门的拦路虎》", "url": "https://finance.sina.cn/sa/2006-09-15/detail-ikftssap1110466.d.html", "snippet": "Panda 商标在穆斯林国家因熊猫似猪而卖不出去"}], "class": "culture"}, {"id": "numbers", "keywords": ["13", "666", "520", "888", "吉利数字", "数字谐音", "讨彩头", "谐音数字"], "premise": "中文文案默认数字自带吉凶与谐音梗（8=发、520=我爱你、666=厉害），读者秒懂，不需要注解。", "markets": {"欧美": {"level": "warn", "reading": "13 在西方是不祥数字；8、520、666 的谐音梗完全失效，666 在基督教语境还有负面含义。", "fix": "定价与编号避开 13，谐音梗改成明说的文案，别指望翻译能保留。"}, "default": {"level": "warn", "reading": "数字吉凶与谐音不可跨语言迁移。", "fix": "把谐音想表达的意思直接写出来。"}}, "faq": ["这个价格有什么讲究吗？", "为什么是这个编号？", "数字是随机定的吗？"], "sources": [{"title": "央视网《国际品牌商标设计禁忌》", "url": "https://www.cctv.com/brand/20060710/102157.shtml", "snippet": "西方国家认为 13 是不幸凶险的数字，任何场合尽量避开"}], "class": "culture"}, {"id": "laotie", "keywords": ["老铁", "家人们", "宝子", "兄弟姐妹", "亲亲", "宝子们"], "premise": "「老铁」「家人们」「宝子」是中文直播电商里的亲昵称谓，默认能瞬间拉近距离、营造热闹氛围。", "markets": {"欧美": {"level": "danger", "reading": "直译成 dear family / buddies 会显得过度亲密甚至冒犯，英文商业文案对陌生消费者一般不用 familial 称呼。", "fix": "换成中性的 you / everyone，靠内容而不是称谓制造亲近感。"}, "default": {"level": "warn", "reading": "亲昵称谓的社交距离许可因文化而异；快手照搬「老铁文化」在韩国已验证水土不服。", "fix": "改用目标市场惯用的中性称呼。"}}, "faq": ["为什么叫我家人？", "这是直播带货吗？", "说话的人是认识我吗？"], "sources": [{"title": "OC&C：中企本土化挑战（快手照搬老铁文化在韩国遇冷）", "url": "https://www.sgpjbg.com/labels/zhongqibentuhuatiaozhan/1/7500783.html", "snippet": "快手国际团队在国内，盲目复刻老铁文化，在韩国等地水土不服"}], "class": "institution"}, {"id": "groupbuy", "keywords": ["砍一刀", "拼团", "助力", "分享得", "拉新"], "premise": "默认「找朋友帮忙砍价」是正向的熟人互动，而不是对社交关系的消耗；默认裂变机制无需解释。", "markets": {"欧美": {"level": "danger", "reading": "强迫分享式裂变易被读成 spam / 社交绑架，还可能触发平台对诱导分享的限制；「砍一刀」直译语义不通。", "fix": "把裂变换成无需人情负担的现金返利（Referral Bonus）与游戏化界面，把「省钱」重构成身份感而非砍价动作。"}, "default": {"level": "warn", "reading": "熟人裂变在部分市场并不成立，需按当地主流下单路径重设计。", "fix": "把机制改成本地习惯的推荐奖励，并明说规则。"}}, "faq": ["为什么必须分享才能拿到这个价？", "不分享可以买吗？", "我的朋友会收到什么？"], "sources": [{"title": "Temu 超级碗广告案例：Referral Bonus 替代砍一刀", "url": "https://m.10100.com/article/5205172", "snippet": "未照搬国内砍一刀，改用符合北美习惯的现金返利与游戏化界面"}], "class": "institution"}, {"id": "price-anchor", "keywords": ["9.9", "包邮", "全网最低", "平替", "性价比", "亏本"], "premise": "默认「9.9」「包邮」「全网最低」是不需要解释的价格锚点，读者自动脑内就有参照系，且默认低价第一反应是「划算」。", "markets": {"欧美": {"level": "warn", "reading": "人民币价格锚点无法直接迁移；超低价若无品质叙事支撑，容易被归到「便宜没好货」，与国内「薅羊毛」的正向情绪相反。", "fix": "换成本地币种与本地参照物，并补一句品质/履约/退换说明。"}, "default": {"level": "warn", "reading": "价格带、币种、运费条款都需本地化，「包邮」尤其要说明是否含跨境段与关税。", "fix": "明写币种、运费与关税范围。"}}, "faq": ["这个价格是本地货币吗？", "这么便宜质量有保障吗？", "运费和关税包含在内吗？"], "sources": [{"title": "中国国家品牌网《Temu 跻身全球前三》", "url": "http://mp.weixin.qq.com/s?__biz=MzUzNjQyOTUwNA==&mid=2247513232&idx=1&sn=86cb890d23b913fe8b7eae0334cb57e2", "snippet": "美国中产并非追求廉价，而是拒绝品牌溢价；Temu 用 Shop like a billionaire 重构低价叙事"}], "class": "institution"}, {"id": "guohuo", "keywords": ["国货之光", "民族品牌", "中国智造", "为国争光"], "premise": "「国货之光」默认读者共享「支持本土产业 = 正当且值得自豪」的情感框架，文案不需论证。", "markets": {"欧美": {"level": "warn", "reading": "民族自豪叙事在海外容易被读成民族主义营销，反而引发抵触；「中国智造」也常被当作产地标签而非品质证明。", "fix": "把主张从「国籍」换成可验证的产品事实（材料、工艺、认证、质保）。"}, "default": {"level": "warn", "reading": "来源国情绪在不同市场的正负方向不一致。", "fix": "用具体可验证的卖点替代身份叙事。"}}, "faq": ["这个主张和产品质量有什么关系？", "有哪些第三方认证？", "产地在哪里？"], "sources": [], "class": "culture"}, {"id": "jiangxin", "keywords": ["匠心", "匠人", "大师", "祖传", "古法"], "premise": "「匠心」「古法」「祖传」在中文里自动等同于品质与可信，读者不会追问证据。", "markets": {"欧美": {"level": "warn", "reading": "这类不可证伪的形容词在偏重实证的广告语境里常被判定为无信息量，甚至触发夸大宣传审查。", "fix": "换成可核验的事实：工时、工序、材料来源、检测报告、保修年限。"}, "default": {"level": "warn", "reading": "含蓄的品质暗示需要落在具体证据上。", "fix": "把「匠心」翻译成具体数字与标准。"}}, "faq": ["「古法」具体指什么工艺？", "有检测报告吗？", "和别的产品差在哪里？"], "sources": [], "class": "culture"}, {"id": "face-gift", "keywords": ["有面子", "送长辈", "送礼", "孝", "体面"], "premise": "默认「送礼要体面」「送长辈是孝」是不需要解释的人情规则，中文广告常靠这套共识跳过论证。", "markets": {"欧美": {"level": "warn", "reading": "「面子 / 孝」在个人主义语境里没有等价概念，直译容易被读成道德绑架或奇怪的社交压力。", "fix": "把场景明说出来（「适合节日带去聚餐」），用具体使用情境替代身份与礼数。"}, "default": {"level": "warn", "reading": "礼数与人情规则的强度因文化而异。", "fix": "改用具体场合描述。"}}, "faq": ["为什么一定要送这个？", "适合什么场合？", "收礼的人会怎么想？"], "sources": [], "class": "culture"}, {"id": "tcm", "keywords": ["养生", "上火", "祛湿", "补气", "温补", "寒性"], "premise": "「上火」「祛湿」「补气」是中文生活常识，默认读者理解这套身体观，产品功效不需要额外解释。", "markets": {"欧美": {"level": "danger", "reading": "中医概念在英文里没有对应体系，直译常变成无意义或伪科学表述；涉及功效还可能触碰健康宣称合规红线。", "fix": "改用可感知的具体描述（如「不含咖啡因」「低糖」），并避开医疗功效宣称。"}, "default": {"level": "warn", "reading": "传统身体观不可直译，且健康类目法规严格。", "fix": "先查目标市场健康宣称规范，再改用成分与口感描述。"}}, "faq": ["「祛湿」是什么意思？", "这算保健品还是食品？", "有临床依据吗？"], "sources": [], "class": "claim"}, {"id": "festival", "keywords": ["618", "双11", "双十一", "年货节", "春节", "中秋", "开门红"], "premise": "大促节点与节庆在中文里自带「该囤货 / 该团圆 / 该送礼」的行动指令，文案默认读者知道日期与情绪。", "markets": {"欧美": {"level": "warn", "reading": "618、双11 在海外没有认知基础；春节、中秋的团圆联想也需重新解释，直接搬日期会造成困惑。", "fix": "换成本地节点（Black Friday / Christmas），或把「为什么现在买」的理由明写出来。"}, "default": {"level": "warn", "reading": "节庆日历与消费节奏不通用。", "fix": "对齐本地促销日历。"}}, "faq": ["这个节日是什么时候？", "为什么现在有活动？", "活动持续多久？"], "sources": [], "class": "culture"}, {"id": "whitening", "keywords": ["美白", "白幼瘦", "一白遮百丑"], "premise": "「美白」「一白遮百丑」在中文美妆语境里是默认正向的审美表达，文案不会意识到它带有肤色价值判断。", "markets": {"欧美": {"level": "danger", "reading": "whitening / fair skin 在欧美易关联种族歧视与殖民历史，属高敏感表述，已有国货美妆品牌因此被投诉下架。", "fix": "改成「提亮 / 均匀肤色 / 光泽感」等描述，不出现肤色优劣比较。"}, "default": {"level": "danger", "reading": "肤色审美在多地属敏感议题，中东、欧美市场尤其如此。", "fix": "彻底避免肤色等级表述。"}}, "faq": ["产品是想改变肤色吗？", "对所有肤质都适用吗？", "这个说法有依据吗？"], "sources": [], "class": "claim"}, {"id": "social-mood", "keywords": ["内卷", "躺平", "打工人", "996", "牛马"], "premise": "「内卷」「躺平」「打工人」是中文网络共同情绪，靠一个词就能唤起整代人的处境共鸣。", "markets": {"欧美": {"level": "warn", "reading": "直译后失去全部社会语境，容易被读成抱怨或不知所云；部分表达还涉及劳动法敏感话题。", "fix": "把想唤起的情绪明说成具体场景（工时、通勤、预算），别依赖梗。"}, "default": {"level": "warn", "reading": "网络梗的共鸣高度依赖本地语境。", "fix": "改用具体场景描述。"}}, "faq": ["这个词是什么意思？", "是在开玩笑吗？", "和 product 有什么关系？"], "sources": [], "class": "culture"}, {"id": "proverb", "keywords": ["望子成龙", "光宗耀祖", "成语", "典故", "四字"], "premise": "成语与典故默认读者共享同一套文化文本，四字即可承载完整论证，中文文案习惯「点到为止」。", "markets": {"欧美": {"level": "warn", "reading": "典故直译后读者无法补全省略的背景，含蓄表达常让对方看不出具体卖点。", "fix": "把成语想表达的那层意思直接写成一句白话。"}, "default": {"level": "warn", "reading": "以物寄情、点到为止的含蓄在偏直白语境里容易失效。", "fix": "补上被省略的前提。"}}, "faq": ["对方会问：这句到底想说什么？", "典故出处是什么？", "和产品有什么关系？"], "sources": [{"title": "中国日报《筷子仅仅是个餐具？》", "url": "https://language.chinadaily.com.cn/a/201811/23/WS5bf7dcc5a310eff30328ac1d.html", "snippet": "筷子承载文化传承与血脉亲情，中文语境中不必解释"}], "class": "culture"}, {"id": "red-color", "keywords": ["红色", "喜庆", "红包装", "金色"], "premise": "红金配色在中文里默认等于喜庆、高端、节日，视觉不需要额外说明。", "markets": {"欧美": {"level": "warn", "reading": "红色在部分市场关联警示、亏损或政治含义；红金组合也可能被读成廉价促销感。", "fix": "按目标市场色彩语义调整主色，促销与高端视觉分开做。"}, "default": {"level": "warn", "reading": "色彩的情绪与礼仪含义不通用。", "fix": "请本地读者过一遍主视觉。"}}, "faq": ["为什么用这个颜色？", "是节日限定吗？", "有其他配色吗？"], "sources": [{"title": "央视网《国际品牌商标设计禁忌》", "url": "https://www.cctv.com/brand/20060710/102157.shtml", "snippet": "出口商品商标的文字、图形、颜色应避免不好含义，须适应当地风俗"}], "class": "culture"}, {"id": "white-color", "keywords": ["纯白", "素白", "白色包装", "一身白", "洁白"], "premise": "「洁白 / 纯白」在中文里默认关联洁净、素雅，但白色在传统语境里也用于丧葬，文案通常不会意识到这层双关。", "markets": {"欧美": {"level": "warn", "reading": "白色在欧美多关联婚礼与纯净，与中文的丧葬联想方向不同；纯白礼盒在部分场合会被误读为婚庆用品。", "fix": "按使用场景确认白色语义，必要时改用其他主色或补一句场景说明。"}, "default": {"level": "warn", "reading": "白色的礼仪含义在喜庆与哀悼之间因市场而异。", "fix": "先核对目标市场的色彩礼仪再定包装主色。"}}, "faq": ["这个白色是有什么场合含义吗？", "是礼盒还是日常装？", "有其他配色吗？"], "sources": [], "class": "culture"}, {"id": "chrysanthemum", "keywords": ["菊花", "菊纹", "赏菊"], "premise": "菊花在中文里是四君子之一，象征高洁长寿，用作图案与礼品包装时默认褒义。", "markets": {"欧美": {"level": "danger", "reading": "在法国、意大利、比利时等地，菊花主要用于扫墓与悼念，作为礼品图案属明显失礼。", "fix": "面向这些市场更换花卉图案，不要复用国内素材库。"}, "default": {"level": "warn", "reading": "花卉的哀悼 / 喜庆含义跨市场差异很大。", "fix": "请本地读者核对花卉礼仪含义。"}}, "faq": ["这个花纹是什么场合用的？", "为什么选菊花？", "有别的图案版本吗？"], "sources": [], "class": "culture"}, {"id": "bat", "keywords": ["蝙蝠", "蝠纹", "五福捧寿"], "premise": "「蝠」谐音「福」，蝙蝠在中文装饰里是吉祥符号，文案默认这份联想能被读出来。", "markets": {"欧美": {"level": "warn", "reading": "bat 在欧美关联吸血鬼、黑暗与不祥，吉祥寓意完全反转，且谐音梗本身不可译。", "fix": "更换图案，并把「福」的意思直接写进文案，不要依赖谐音。"}, "default": {"level": "warn", "reading": "谐音吉祥在翻译后必然丢失，动物联想还可能反转。", "fix": "改用当地认可的吉祥符号。"}}, "faq": ["为什么用蝙蝠做图案？", "它象征什么？", "和万圣节有关吗？"], "sources": [], "class": "culture"}, {"id": "measurement", "keywords": ["半斤", "三两", "一亩", "市斤", "公分", "厘米", "毫升", "克重", "尺码", "平方尺"], "premise": "「半斤」「三两」「500 毫升」这类量感描述，默认读者不用换算或对照就能判断多少。", "markets": {"欧美": {"level": "warn", "reading": "市制单位在欧美没有认知基础，且习惯英制 / 公制并用，直接搬数字会让规格失实或无法理解。", "fix": "换算成目标市场通用单位并同时标注两种，别只保留中文习惯单位。"}, "default": {"level": "warn", "reading": "度量衡与规格表述不通用，涉及容量的还需核对标签法规。", "fix": "换算单位并核对当地标签规范。"}}, "faq": ["这个规格是多少（本地单位）？", "净含量含包装吗？", "有公制换算表吗？"], "sources": [], "class": "institution"}, {"id": "logistics", "keywords": ["包邮", "次日达", "七天无理由", "货到付款", "包退", "运费险", "极速退款"], "premise": "「包邮 / 次日达 / 七天无理由」默认了国内电商的履约基础设施，读者自动认为这些承诺自然成立。", "markets": {"欧美": {"level": "warn", "reading": "跨境订单无法承接「次日达」，无本地仓与退换点会让承诺变成虚假宣传；货到付款在当地也非主流。", "fix": "写清实际时效、退换方式与跨境段责任，不要照搬国内服务承诺。"}, "default": {"level": "warn", "reading": "履约承诺依赖本地物流与支付习惯，跨境场景尤其容易落空。", "fix": "按目标市场真实能力重写服务条款。"}}, "faq": ["多久能送到？", "退货寄到哪里、谁付运费？", "支持哪些本地支付方式？"], "sources": [], "class": "institution"}, {"id": "authority", "keywords": ["央视", "国标", "非遗", "老字号", "中华老字号", "质检报告", "上榜", "认证"], "premise": "国内权威机构与称号默认自带公信力，文案列出名称就认为完成了信任论证。", "markets": {"欧美": {"level": "warn", "reading": "海外读者不认识这些机构，称号直译后既不能建立信任，还可能被当成无法核验的自封头衔。", "fix": "换成目标市场认可的第三方标准与可查编号，并说明认证范围。"}, "default": {"level": "warn", "reading": "权威来源的公信力不跨境转移。", "fix": "补上可查询的认证编号与国际通用标准名。"}}, "faq": ["这个认证由谁颁发？", "在哪里可以查到？", "认证覆盖哪些项目？"], "sources": [], "class": "claim"}, {"id": "homophone", "keywords": ["谐音", "讨彩头", "一语双关", "谐音梗", "讨个好兆头", "寓意"], "premise": "谐音与「讨彩头」是中文文案最常用的修辞，默认读者能听出那层没写出来的意思。", "markets": {"default": {"level": "warn", "reading": "谐音在翻译后 100% 丢失，字面常只剩一个无关名词，双关结构无法迁移。", "fix": "把想讨的那层意思直接写成白话，不要指望翻译保留双关。"}}, "faq": ["这个名字有什么讲究？", "是双关语吗？", "直译后意思还在吗？"], "sources": [], "class": "culture"}, {"id": "fengshui", "keywords": ["开运", "招财", "风水", "镇宅", "转运", "旺运", "福气"], "premise": "「开运 / 招财 / 镇宅」默认读者共享一套民间吉凶观念，产品卖点不需要解释作用机制。", "markets": {"欧美": {"level": "danger", "reading": "这类表述在偏实证的广告语境里容易被判为迷信或无依据的功效宣称，涉及健康、财富承诺时还可能触碰合规红线。", "fix": "改成可感知的设计与使用场景描述，去掉运势与功效承诺。"}, "default": {"level": "warn", "reading": "民间吉凶观念不具普适性，且易与功效宣称合规冲突。", "fix": "改用文化装饰或审美角度表述。"}}, "faq": ["这个说法有依据吗？", "产品实际功能是什么？", "是装饰品还是有功能宣称？"], "sources": [], "class": "claim"}];
+const SIGNALS = {"note": "未命中内置文化规则库时，按输入文本的信号特征给出低置信度的规则推断。这些结论不来自知乎社区语料，不得当作已溯源的社区佐证。", "signals": [{"id": "price", "label": "价格 / 促销 / 数字", "contains": ["元", "块", "折", "价", "包邮", "特惠", "秒杀", "满减", "赠", "送", "免单", "券", "红包", "划算", "白菜价", "亏本", "补贴", "¥", "￥", "$"], "regex": "\\d+(\\.\\d+)?\\s*(元|块|折|币)", "premises": ["默认价格数字自带参照系，读者看到数字就自动脑补「贵还是便宜」，不需要给出比较对象", "默认低价带来的第一反应是「划算」，而不是「质量可疑」"], "risks": ["人民币价格锚点与价格带无法直接迁移，数字在目标市场可能完全失去意义或显得异常廉价", "「包邮」「满减」等履约术语若不说明跨境段、关税与退换，容易在下单后变成纠纷"], "fix": "换成本地币种与本地参照物，明写运费、关税与退换范围，并补一句品质或履约说明支撑低价。", "faq": ["这个价格是本地货币吗？", "这么便宜质量有保障吗？", "运费和关税包含在内吗？"], "market_notes": {"欧美": "欧美市场对超低价敏感度高，缺少品质叙事时容易被归入「便宜没好货」，与国内「薅羊毛」的正向情绪相反。", "东南亚": "东南亚多国币种与价格敏感度差异大，直接搬人民币锚点会失真，部分市场以货到付款为主。", "港澳": "港澳需标明港币/澳门币，并说明「包邮」是否含跨境段，否则易生争议。", "中东": "中东货到付款（COD）占比高，需换算本地币种并写清关税与跨境运费；斋月前后是重要促销节点。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "institution"}, {"id": "cta", "label": "号召 / 紧迫 / 鼓动", "contains": ["冲", "抢", "别错过", "立即", "马上", "赶快", "仅限", "倒计时", "下单", "点击", "速来", "手慢无", "错过", "快来", "开抢", "蹲", "安排", "闭眼入", "无脑", "最后"], "regex": "[!！]{2,}", "premises": ["默认密集的催促与感叹号是「热情有活力」，而不是施加压力", "默认限时、稀缺制造的紧迫感可以不加解释地迁移到别的市场"], "risks": ["高压催促与重复感叹在部分市场容易被读成垃圾信息或诱导，反而降低信任", "FOMO 式话术在广告规范较严的市场可能触发合规审查，且「冲」「安排」直译后语义不通"], "fix": "把「为什么现在买」的理由明说出来，去掉重复催促，给出明确的时效、库存与退换条件。", "faq": ["为什么必须现在决定？", "活动到什么时候结束？", "不买会错过什么？"], "market_notes": {"欧美": "欧美商业文案对强推式 CTA 接受度较低，宜用陈述式理由替代命令式催促。", "东南亚": "社媒私聊下单为主的市场，「点击下单」这一动作本身可能不成立，需对齐当地链路。", "港澳": "港澳惯用繁体与粤语口语，「冲」「闭眼入」会显得是外来广告，距离感反而变大。", "中东": "强推式 CTA 宜改用陈述式理由；促销时间需避开宗教节日与礼拜时段，并做广告合规核对。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "institution"}, {"id": "address", "label": "亲昵称谓 / 社群口吻", "contains": ["家人们", "老铁", "宝子", "亲", "兄弟姐妹", "姐妹们", "兄弟们", "咱", "各位", "朋友们", "小伙伴", "集美", "同学们"], "premises": ["默认陌生消费者可以被当作熟人或家人称呼，且这种亲昵会拉近距离", "默认直播电商的社群氛围是所有市场共通的购物语境"], "risks": ["这类家族式称呼在陌生消费者面前容易显得过度亲密，很多市场的商业文案并不这么用", "这类称谓高度绑定中文平台文化，脱离平台后失去全部语境"], "fix": "换成中性的 you / everyone，靠内容本身而不是称谓制造亲近感。", "faq": ["为什么叫我家人？", "这是直播带货吗？", "说话的人是认识我吗？"], "market_notes": {"欧美": "英文商业文案对陌生消费者极少使用 familial 称呼，直译易被判定为越界。", "东南亚": "部分市场社群购物氛围浓，但仍需核对当地惯用的称呼习惯，不宜照搬内地黑话。", "港澳": "应转繁体并改用本地口语，「家人们」「老铁」会立刻暴露外来广告身份。", "中东": "「家人们」「老铁」在当地语言里没有对应的亲昵称谓，宜改用当地通用的礼貌称呼。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "institution"}, {"id": "classical", "label": "成语 / 雅词 / 含蓄表达", "contains": ["匠心", "传承", "千年", "古法", "祖传", "东方", "国风", "诗意", "意境", "底蕴", "雅致", "尚品", "蕴含", "沉淀", "韵味", "之", "其", "颂", "赋", "典"], "premises": ["默认四字雅词与典故能承载完整论证，读者可自行补全省略的背景", "默认「点到为止、以物寄情」的含蓄是高级感，而不是没说清"], "risks": ["不可证伪的形容词在偏重实证的广告语境里常被判定为无信息量，甚至触发夸大宣传审查", "典故直译后读者无法补全省略的背景，含蓄表达容易让对方读成「看不出具体卖点」"], "fix": "把成语想表达的那层意思直接写成一句白话，并把品质主张换成工时、工序、材料、检测报告等可核验事实。", "faq": ["「古法」具体指什么工艺？", "有检测报告吗？", "和别的产品差在哪里？"], "market_notes": {"欧美": "欧美广告更接受具体数字与第三方标准，「匠心」「千年传承」这类表述说服力弱。", "东南亚": "华人社群能读懂雅词，但多族群市场需补一句情境说明，否则非华裔读者无从进入。", "港澳": "与内地一致，雅词与文言可直接理解，仅需转繁体。", "中东": "「匠心」「千年传承」这类雅词直译后常变成空泛形容词，建议补上可核验的工艺或标准。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "superlative", "label": "绝对化 / 权威宣称", "contains": ["最", "唯一", "全网", "顶级", "国家级", "领先", "销量", "冠军", "认证", "专家", "权威", "首选", "标杆", "王牌", "极致", "无敌", "百分百", "100%", "史无前例", "全网第一", "行业第一", "销量第一", "排名第一", "第一品牌"], "premises": ["默认最高级形容词不需要证据，读者不会追问「凭什么」", "默认内地的认证、奖项与权威背书在别的市场具有同等分量"], "risks": ["unverified superlatives 在广告规范较严的市场容易触发合规审查，需有可核验依据", "内地认证与奖项在别的市场往往不被识别，作为信任锚点几乎无效"], "fix": "改用可验证的具体数字、适用范围与第三方标准名称，去掉无依据的绝对化表述。", "faq": ["这个「第一」依据是什么？", "有哪些第三方认证？", "数据来自哪里？"], "market_notes": {"欧美": "欧美对绝对化宣称的举证要求较严，无依据的最高级用语风险最高。", "东南亚": "各国广告规范差异大，涉及排名与认证需逐市场核对。", "港澳": "港澳对「最」「第一」类宣称亦有规管，宜保留可查证的出处。", "中东": "海湾多国对「最」「第一」类宣称要求可查证依据，宣称也不得涉及宗教与公共秩序。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "claim"}, {"id": "festival", "label": "节庆 / 时间节点", "contains": ["节", "年货", "中秋", "春节", "端午", "国庆", "新年", "开年", "焕新", "开学", "大促", "双11", "双十一", "618", "今日", "本周", "本季", "开春", "入秋", "入冬", "换季"], "premises": ["默认大促节点与节庆自带「该囤货 / 该团圆 / 该送礼」的行动指令", "默认读者知道这些日期，也共享附着在日期上的情绪"], "risks": ["618、双11 在部分市场没有认知基础，直接搬日期只会造成困惑", "节庆的团圆、馈赠联想需要重新解释，否则「为什么现在买」这一环是空的"], "fix": "对齐目标市场的促销与节庆日历，并把「为什么现在买」的理由明写出来。", "faq": ["这个节日是什么时候？", "为什么现在有活动？", "活动持续多久？"], "market_notes": {"欧美": "宜换用 Black Friday、Christmas 等本地节点，或明写促销理由。", "东南亚": "多国节庆与宗教日历不同，需按市场分别核对，避免误用宗教敏感日期。", "港澳": "港澳节庆日历与内地接近，风险较低，但需转繁体并留意本地称呼。", "中东": "618、双11 在当地没有认知基础；斋月、开斋节与当地国庆日才是主要节点，且需尊重宗教氛围。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "emotion", "label": "情感 / 家庭 / 关系", "contains": ["家人", "团圆", "陪伴", "爸妈", "父母", "亲人", "孩子", "礼物", "思念", "懂你", "温柔", "治愈", "仪式感", "暖心", "爱心", "孝心", "牵挂", "归属感", "一家", "全家", "团聚", "尽孝", "情意"], "premises": ["默认「家 / 团圆 / 陪伴」是无需解释的最高正向价值，读者会自动补上整套画面", "默认以物寄情、点到为止的含蓄能被别的市场原样接收"], "risks": ["转译后往往只剩字面物件，情感层与关系层容易丢失，变成一句莫名其妙的陈述", "「孝」「面子」「团圆」在个人主义语境里没有等价概念，含蓄表达常让对方看不出具体卖点"], "fix": "把情感负载明说出来，并补上一个具体使用情境，替读者补上中文里省略的那层关系。", "faq": ["对方会问：这到底是什么产品？", "「团圆」具体指什么场合？", "为什么会联想到家人？"], "market_notes": {"欧美": "宜用具体场景（节日聚餐、日常使用）替代抽象的家庭价值叙事。", "东南亚": "华人社群能接收家庭意象，但多族群市场需补情境说明。", "港澳": "与内地完全共通，这套家庭意象无需解释，转繁体即可。", "中东": "家庭与待客价值在当地同样被重视，但含蓄的以物寄情需改成直白场景描述才能被读出。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "symbol", "label": "意象 / 颜色 / 动物 / 器物", "contains": ["红", "金", "龙", "凤", "竹", "梅", "月", "筷", "灯笼", "福", "喜", "祥", "瑞", "象", "鹤", "鹿", "莲", "荷", "蝠", "中国结", "水墨", "青花", "熊猫"], "premises": ["默认吉祥意象的褒贬可以随翻译一起迁移到别的市场", "默认红金配色天然等于喜庆、高端、节日，视觉不需要额外说明"], "risks": ["动物与植物意象的褒贬跨文化差异极大，部分直译后褒义直接反转", "红色在部分市场关联警示、亏损或政治含义，红金组合也可能被读成廉价促销感"], "fix": "意象与配色按目标市场重选，品牌名优先音译，若保留意象则补一句情境说明，并请本地读者过一遍主视觉。", "faq": ["这个图案有什么寓意？", "为什么用这个颜色？", "是本地设计吗？"], "market_notes": {"欧美": "dragon、white elephant、cock 等均有已知误读风险，红色需核对警示/亏损联想。", "东南亚": "白象在泰、缅、印度等地为神圣吉祥符号，但在部分国家与王室佛教典故相关，避免戏谑或打折调侃。", "港澳": "中英双语并列时，英文部分若直译意象仍可能触发英语负面联想，建议英文另起名。", "中东": "龙、蝙蝠、菊花等吉祥寓意在当地没有对应概念；动物与人物形象、酒类、部分颜色还需核对宗教与生活禁忌。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "health", "label": "健康 / 身体 / 功效", "contains": ["养", "补", "瘦", "美白", "抗", "嫩", "润", "排毒", "气血", "湿", "寒", "健", "肤", "肌", "气色", "调理", "养生", "0糖", "无添加", "天然", "纯", "轻"], "premises": ["默认「上火」「祛湿」「补气」这类身体观是生活常识，功效不需要额外解释", "默认「天然」「0 糖」自带健康正向，读者会自动补全因果"], "risks": ["传统身体观在别的语言里没有对应体系，直译常变成无意义或伪科学表述", "涉及功效与肤色表述可能同时触碰健康宣称合规红线与种族敏感议题"], "fix": "改用可感知的成分、口感与检测数据描述，先查目标市场健康宣称规范，避开医疗功效与肤色优劣表述。", "faq": ["「祛湿」是什么意思？", "这算保健品还是食品？", "有临床依据吗？"], "market_notes": {"欧美": "健康宣称受严格规管，美白类表述还涉及肤色敏感议题，属高风险区。", "东南亚": "部分市场有清真、成分与标签的额外要求，需逐项核对。", "港澳": "港澳对健康声称亦有规管，繁体标签的成分标示需合规。", "中东": "健康、美白与成分宣称需符合当地标签与广告规范，部分品类另有认证要求。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "claim"}, {"id": "latin", "label": "中英混排 / 拼音 / 外文名", "regex": "[A-Za-z]{2,}", "premises": ["默认中英混排能同时被中文与外文读者读通", "默认出现英文就代表这个名称已经做过本地化校验"], "risks": ["拼音或直译英文名常带意外歧义，是品牌出海最经典的事故来源", "中英并列时，中文部分无误但英文部分可能单独触发负面联想"], "fix": "把品牌名与英文名拆开做母语者复核，不要默认中文名的直译或拼音可以直接使用。", "faq": ["这个英文名是什么意思？", "名字是本地起的吗？", "中英文名为什么不一样？"], "market_notes": {"欧美": "需核对英语口语、金融与俚语中的歧义，仅查字典义不够。", "东南亚": "多语环境下还需核对当地语言（泰语、马来语、越南语）中的谐音。", "港澳": "港澳常见中英并列，英文部分的负面联想尤其容易被本地读者读出。", "中东": "名称需核对阿拉伯语与英语的读音、含义及宗教敏感联想，不能只查字典义。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "brand"}, {"id": "short", "label": "极简短句", "max_len": 12, "premises": ["短句承载的省略最多：主语、场景、因果全都被省掉，默认读者能自行补全", "默认一个词就足以唤起整代人共享的情绪或共识"], "risks": ["越短越依赖共享语境，跨语言后最容易被对方读成「看不出是什么产品」", "极短文案常同时是梗或成语，翻译后只剩字面，语气与情绪全部丢失"], "fix": "补上「谁在对谁说话、为什么这件事值得在意」，把被省略的前提至少写出一句。", "faq": ["对方会问：这句到底想说什么？", "这是给谁看的？", "有没有更直白的说法？"], "market_notes": {"欧美": "偏直白的广告语境里，极短含蓄句最容易被判定为信息不足。", "东南亚": "多语市场里极短句更易丢失语境，建议补一句情境说明。", "港澳": "港澳中文广告接受短句与文言节奏，风险相对较低。", "中东": "极短含蓄句在跨语言转译后最容易丢失语境，建议补一句场景说明。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "long", "label": "长叙述", "min_len": 60, "premises": ["默认读者会逐句读完长文案并自行串联逻辑", "默认关键前提即使埋在末尾也会被读到"], "risks": ["阅读路径与信息密度习惯不同，长叙述在部分市场容易被跳过", "埋在中后段的文化前提一旦被跳过，整段论证就失去支撑"], "fix": "把关键前提与卖点前置，重要信息不依赖上下文补全，必要时拆成可扫读的短块。", "faq": ["重点是哪一句？", "可以一句话说完吗？", "前提在哪里交代的？"], "market_notes": {"欧美": "偏好可扫读的结构与前置结论，长段落宜拆分。", "东南亚": "移动端阅读占比高，长叙述宜进一步压缩。", "港澳": "繁体长文案需留意排版与断句节奏。", "中东": "阿拉伯语阅读方向与排版不同，长叙述宜前置结论并压缩，关键前提不要埋在末尾。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}], "baseline": {"premises": ["未检测到可识别的中文营销信号，这段文案可能已是中性陈述或产品规格说明", "中性文案通常不依赖文化共识，但专有名词、单位与认证编号仍可能需要本地化"], "risks": ["这类文案跨文化传播风险一般较低；若有品牌名、度量单位、认证编号或日期格式，请单独做本地化核对", "本结论为规则推断、置信度低，不代表已经过社区语料佐证"], "rewrite": "保持中性直白即可；把品牌名、度量单位、认证编号与日期格式单独列出来逐项复核。", "faq": ["对方会问：这是写给谁看的？", "对方会问：本地有更常见的说法吗？", "对方会问：这里是不是省略了什么背景？"]}, "product": {"label": "中性商品 / 规格描述", "note": "识别到具体商品或规格描述、但未检出营销话术与文化负载符号时的独立结论：文化层面风险低，风险集中在单位、认证、品类叫法与标签合规。属规则推断，置信度低，未附社区语料佐证。", "hints": ["牌", "型号", "规格", "净含量", "容量", "材质", "尺寸", "适用于", "专用", "专供", "系列", "套装", "件套", "毫升", "厘米", "英寸", "克重", "净重", "本品", "本产品", "这款", "该款", "升级款", "经典款", "新款", "同款", "款式", "件套", "适用年龄"], "exclude": ["品牌", "名牌", "王牌", "金牌", "奖牌", "铭牌", "门牌", "车牌", "牌照", "牌匾", "牌面", "牌位", "牌号", "打牌", "扑克", "招牌", "老牌", "挂牌", "牌桌"], "regex": "\\d+\\s*(ml|mL|ML|cm|CM|g|kg|KG|英寸|毫升|厘米|克|件|片|只|支|台|套|包|盒|瓶|袋)", "premises": ["默认读者一看品类或品牌名就知道这是什么、怎么用，不需要补一句用途说明", "默认规格单位、净含量与材质在本地也是通用写法，不需要换算或对照", "默认「这是常见日用品」本身不构成文化门槛，页面上不必解释品类"], "risks": ["这类文案几乎没有寓意、典故与情感叙事，跨文化的语义丢失风险低；真正要处理的是规格单位、安全认证、品类在当地叫什么、标签是否合规，而不是「翻译」", "品牌名若沿用中文或拼音，仍需单独核对在目标语言里有没有意外歧义"], "rewrite": "保留中性直白的商品描述，补一句用途与适用场景；把规格换算成目标市场通用单位，列清材质、安全认证与警示标示，并确认品类使用当地通行的叫法。", "faq": ["对方会问：这个规格换算成本地单位是多少？", "对方会问：有当地认可的安全 / 质检认证吗？", "对方会问：这类产品在当地通常叫什么名字？"], "market_notes": {"欧美": "重点核对英制 / 公制换算、适用的安全认证与警示标签，以及品类在英语里的通行叫法；配件与年龄分级标示也可能影响上架。", "中东": "需核对阿拉伯语标签、海湾地区认证与货到付款履约；若材质涉及动物来源、酒精或人物形象，先做宗教与生活禁忌核对。", "东南亚": "各国标签、币种与认证要求不一，部分市场另有清真与成分标示要求；多语环境下品类名宜逐一试读。", "港澳": "与内地文化共通，商品描述无需解释；仅需转繁体，核对本地惯用品类名与机电 / 安全规格的本地标示要求。", "default": "请把规格单位、认证编号与品类叫法逐项交给本地读者核对。"}}};
+const MARKETS = {"list": ["欧美", "中东", "东南亚", "港澳"], "order_note": "按与内地共享文化前提的多少，由远及近排列", "profiles": {"欧美": {"stance": "跨语言 · 跨文化", "shared": "共享前提极少", "summary": "中文文案里没写出的默认前提，目标读者大多不具备；翻译后语义常丢失或反转，广告合规要求也较严。"}, "中东": {"stance": "异质文化圈", "shared": "中文吉祥符号基本没有对应概念", "summary": "祥瑞意象、典故与谐音在当地读不到寓意、只剩字面；动物与人物形象、酒类、部分颜色、身体表述还可能触碰宗教与生活禁忌，需本地合规核对。"}, "东南亚": {"stance": "部分共享 · 多族群", "shared": "华人社群能读懂部分意象", "summary": "华人读者能接收不少中文意象，但多族群市场里非华裔读者未必共享；币种、支付、履约与宗教日历各国不同，需逐市场核对。"}, "港澳": {"stance": "同文化圈", "shared": "与内地共享绝大多数文化前提", "summary": "港澳读者与内地读者对典故、节庆、亲情、吉祥意象的理解基本一致，无需解释；差异集中在繁简书面语、粤语口语、制度与履约用语、币种与支付习惯。"}}, "by_class": {"港澳": {"culture": {"level": "pass", "reading": "这层寓意在港澳与内地理解一致，读者直接就能读懂，无需解释或改写。", "fix": "保持原文即可；如投放本地媒体，仅需转繁体书面语并留意粤语节奏。"}, "institution": {"level": "warn", "reading": "文化前提是共通的，但这是内地平台与制度口径下的用语，港澳在书面语、币种、支付与履约习惯上另有本地规则。", "fix": "转繁体并改用港澳惯用说法；标明港币／澳门币，写清跨境段运费、关税与退换方式，对齐本地支付与物流时效。"}, "brand": {"level": "warn", "reading": "中文部分没问题，但港澳商业文案常中英并列，英文名或拼音仍可能被按英语读出负面歧义。", "fix": "中文保留并转繁体，英文副标题另起一个在英语里无歧义的名称，不要直译。"}, "claim": {"level": "warn", "reading": "这类宣称港澳本地同样有规管，且繁体标签的成分、认证与标示要求与内地不同。", "fix": "保留可查证的出处，按港澳广告与标签规范核对，并用繁体标示成分与认证编号。"}, "generic": {"level": "warn", "reading": "与内地文化共通，未发现需要解释的文化前提；主要需核对繁简书面语与本地惯用词。", "fix": "转繁体，并请本地读者试读一遍即可。"}}, "中东": {"culture": {"level": "warn", "reading": "这类祥瑞意象、典故或谐音在当地没有对应概念，读者只会读到字面、不会调出寓意；动物与人物形象、酒类、部分颜色及身体相关元素还可能触及宗教与生活禁忌。", "fix": "不要依赖符号与谐音，把想表达的意思直接写成白话；涉及动物、人物、酒类、颜色、身体或裸露的素材先做本地合规核对，必要时更换。"}, "institution": {"level": "warn", "reading": "币种、支付、履约与标签口径不同：货到付款在当地占比高，阿拉伯语标签与本地认证要求也需满足。", "fix": "换算本地币种，写清跨境时效与退换责任，支持当地主流支付，并核对阿拉伯语标签与认证要求。"}, "brand": {"level": "warn", "reading": "拼音与直译名在当地语言里通常不承载语义，还需核对阿拉伯语与英语中的读音、含义及宗教敏感联想。", "fix": "另取在当地语言中无歧义、无宗教敏感联想的名称，并把品牌含义写成白话。"}, "claim": {"level": "danger", "reading": "健康、美白、绝对化与运势类宣称在当地广告规管较严，涉及身体、宗教与公共秩序的表述尤其容易触碰红线。", "fix": "去掉功效与运势承诺，改用可核验的具体描述；投放前请本地合规人员逐句核对。"}, "generic": {"level": "warn", "reading": "这类表述依赖中文默认共识，当地读者缺少对应语境、寓意读不到；个别元素还需核对宗教与生活禁忌。", "fix": "把省略的前提写成白话，并请本地读者与合规人员试读。"}}, "东南亚": {"culture": {"level": "warn", "reading": "华人社群能读懂这类中文意象，但多族群市场里非华裔读者未必共享；部分意象还与佛教或王室典故相关。", "fix": "保留意象并补一句情境说明，避免用于戏谑、打折调侃或宗教相关场合。"}, "institution": {"level": "warn", "reading": "各国币种、价格敏感度与支付习惯差异大，货到付款与社媒私聊下单在不少市场是主流。", "fix": "换算本地币种与价格带，把下单入口放到当地主流链路，写清跨境履约与退换。"}, "brand": {"level": "warn", "reading": "多语环境下，名称需同时核对英语与当地语言（泰语、马来语、越南语等）的谐音与含义。", "fix": "在主要本地语言中逐一试读名称，必要时另起本地名。"}, "claim": {"level": "warn", "reading": "各国广告规范差异大，部分市场另有清真、成分与标签要求。", "fix": "逐市场核对宣称依据与标签规范，保留可查证的认证编号。"}, "generic": {"level": "warn", "reading": "华人读者能接收一部分，但多族群受众未必共享这套前提，需按市场分别核对。", "fix": "补一句情境说明，并请当地读者试读。"}}, "欧美": {}}, "signal_tone": {"港澳": {"culture": {"level": "pass", "risk": "与内地共通，这类表达港澳读者能直接理解，无需改写。", "fix": "保持原文，仅需转繁体书面语。"}, "institution": {"level": "warn", "risk": "文化前提共通，但币种、支付、履约与本地惯用说法需对齐港澳口径。", "fix": "转繁体、标明港币／澳门币、写清跨境段运费与退换，改用本地惯用说法。"}, "brand": {"level": "warn", "risk": "中文没问题，但中英并列时英文／拼音名仍可能被按英语读出负面歧义。", "fix": "中文转繁体，英文副标题另起无歧义名称。"}, "claim": {"level": "warn", "risk": "这类宣称港澳本地同样有规管，繁体标签标示要求也不同。", "fix": "保留可查证出处，按港澳广告与标签规范核对。"}, "generic": {"level": "warn", "risk": "未发现需要解释的文化前提，主要需核对繁简与本地惯用词。", "fix": "转繁体并请本地读者试读。"}}, "中东": {"culture": {"level": "warn", "risk": "中文意象与典故在当地没有对应概念、只剩字面，个别元素还需核对宗教与生活禁忌。", "fix": "把寓意写成白话，动物／人物／酒类／颜色等素材先做本地合规核对。"}, "institution": {"level": "warn", "risk": "货到付款占比高，币种、跨境履约与阿拉伯语标签要求需逐项核对。", "fix": "换算本地币种、支持当地支付、核对阿拉伯语标签与认证。"}, "brand": {"level": "warn", "risk": "拼音与直译名在当地语言里不承载语义，且需避开宗教敏感联想。", "fix": "另取当地语言中无歧义的名称，并把品牌含义写成白话。"}, "claim": {"level": "warn", "risk": "健康、绝对化与运势宣称在当地规管较严，易触碰合规红线。", "fix": "去掉功效与运势承诺，改用可核验描述并做本地合规复核。"}, "generic": {"level": "warn", "risk": "当地读者缺少中文默认语境，寓意读不到；个别元素需核对禁忌。", "fix": "把省略的前提写成白话并请本地读者试读。"}}, "东南亚": {"culture": {"level": "warn", "risk": "华人社群能读懂，但多族群市场里非华裔读者未必共享这套意象。", "fix": "保留意象并补一句情境说明，避免戏谑或宗教相关调侃。"}, "institution": {"level": "warn", "risk": "各国币种、价格带与支付习惯差异大，货到付款与社媒下单更主流。", "fix": "换算本地币种、对齐当地下单链路并写清跨境履约。"}, "brand": {"level": "warn", "risk": "多语环境下名称需在英语与当地语言中逐一核对谐音与含义。", "fix": "在主要本地语言中试读名称，必要时另起本地名。"}, "claim": {"level": "warn", "risk": "各国广告规范差异大，部分市场另有清真与标签要求。", "fix": "逐市场核对宣称依据与标签规范。"}, "generic": {"level": "warn", "risk": "华人读者能接收一部分，多族群受众需按市场分别核对。", "fix": "补一句情境说明并请当地读者试读。"}}, "欧美": {"culture": {"level": "warn", "risk": "中文意象与典故在目标市场没有等价概念，翻译后寓意常丢失或被反向解读。", "fix": "把想表达的意思写成白话，不要依赖读者自行补全中文里省略的那层语境。"}, "institution": {"level": "warn", "risk": "价格锚点、履约承诺与平台玩法难以直接迁移，也可能触发广告规范审查。", "fix": "换算币种与参照物，写清跨境时效与退换，用陈述式理由替代强推话术。"}, "brand": {"level": "warn", "risk": "拼音或直译名常在英语里带意外歧义，是品牌出海最常见的事故来源。", "fix": "核对英语口语、金融与俚语含义，另起无歧义名称。"}, "claim": {"level": "warn", "risk": "绝对化、健康与功效宣称在目标市场举证要求严格。", "fix": "保留可查证出处，去掉无依据的最高级与功效承诺。"}, "generic": {"level": "warn", "risk": "这类表述依赖中文默认共识，目标读者未必共享。", "fix": "把省略的前提明写出来，并请本地读者试读。"}}}};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const LEVEL = {pass:'可直接使用', warn:'建议调整', danger:'必须重写'};
+const MODE  = {preset:'精选黄金答案', rules:'规则引擎', 'rules+llm':'规则+模型增强',
+               llm:'模型开放域分析', generic:'通用检查项',
+               signal:'信号推断（低置信度）', baseline:'通用核对（低置信度）',
+               product:'中性商品描述（低置信度）'};
+const RANK  = {pass:0, warn:1, danger:2};
+const GENERIC_PREMISES = [
+  '中文广告习惯「以物寄情、点到为止」，很多因果关系被省略，默认读者能自行补全',
+  '默认目标市场用户对「划算 / 体面 / 热闹 / 吉利」有和中文读者同一套判断标准',
+  '默认称呼、数字、颜色、典故的联想不需要解释就能被读者接收'
+];
+const SAMPLES = [
+  '白象，纯净可靠，值得信赖',
+  '拼团砍一刀，9.9 包邮，家人们冲！',
+  '添双筷子，就是添一份团圆',
+  '国货之光，匠心古法，送礼倍有面子',
+  '龙牌酱油，望子成龙，年货节特惠',
+  '美白祛湿，618 全网最低价',
+  '蓝天牌，金鸡报晓，飞鸽传书',
+  '养生温补，13 元包邮，老铁们别错过'
+];
+
+function marketView(rule, market){
+  const m = rule.markets || {};
+  if(m[market]) return m[market];                     // ① 该规则的精细分支（如欧美专属）
+  const cls = rule.class || 'generic';
+  const tone = (MARKETS.by_class[market] || {})[cls]; // ② 市场 × 类别 的判定基调
+  if(tone) return tone;
+  return m['default'] || {level:'warn', reading:'该类别暂无专项规则，建议人工复核。', fix:'把隐含语义明说出来，并请本地读者试读。'};
+}
+
+// 多条建议拼接：去掉各条自带句号、去重、用「；」连接，末尾只留一个句号
+function joinFixes(arr){
+  const clean = [...new Set(arr.filter(Boolean).map(s => String(s).replace(/[。；;\s]+$/,'').trim()))].filter(Boolean);
+  return clean.length ? clean.slice(0,3).join('；') + '。' : '把省略的隐含语义明说出来，避免依赖读者自行脑补。';
+}
+
+function compose(hits, market){
+  const views = hits.map(h => [h, marketView(h, market)]);
+  const level = views.reduce((a,[,v]) => RANK[v.level] > RANK[a] ? v.level : a, 'pass');
+  const premises = views.map(([h]) => h.premise).slice(0,4);
+  // 多条同类规则会取到同一段「市场 × 类别」基调，必须去重，避免预警与改写重复堆叠
+  const risks = [...new Set(views.map(([,v]) => v.reading))].slice(0,5);
+  const fixes = [...new Set(views.map(([,v]) => v.fix).filter(Boolean))].slice(0,3);
+  const faq = [...new Set(views.flatMap(([h]) => h.faq || []))].slice(0,3);
+  const defaults = ['这句话具体想让我做什么？','有没有更直白的说法？','这个说法在本地常见吗？'];
+  while(faq.length < 3) faq.push(defaults[faq.length]);
+  const sources = [], seen = new Set();
+  views.forEach(([h]) => (h.sources || []).forEach(s => {
+    if(s.url && !seen.has(s.url)){ seen.add(s.url); sources.push(s); }
+  }));
+  return {
+    level, premises: premises.length ? premises : GENERIC_PREMISES,
+    risks, rewrite: joinFixes(fixes),
+    faq, sources: sources.slice(0,6), matched: hits.map(h => h.id), engine:'rules'
+  };
+}
+
+// —— 输入信号层：让「没命中规则」的文案也能得到随内容、随市场变化的结论 ——
+function signalScore(sig, text){
+  let score = 0, strong = false;
+  (sig.contains || []).forEach(k => {
+    if(text.includes(k)){ score += k.length >= 2 ? 3 : 1; if(k.length >= 2) strong = true; }
+  });
+  if(sig.regex){ try{ if(new RegExp(sig.regex).test(text)){ score += 3; strong = true; } }catch(e){} }
+  const len = [...text].length;
+  const lenHit = (sig.max_len !== undefined && len <= sig.max_len) ||
+                 (sig.min_len !== undefined && len >= sig.min_len);
+  if(lenHit) score += 1;
+  return {score, strong, lenHit};
+}
+
+function detectSignals(text){
+  const scored = SIGNALS.signals.map(s => ({s, ...signalScore(s, text)}))
+    .filter(x => x.score > 0);
+  // 优先「强信号」（双字以上关键词 / 正则）；单字偶然命中与纯长度信号降为兜底
+  let picked = scored.filter(x => x.strong && x.score >= 2)
+    .sort((a,b) => b.score - a.score).slice(0,4);
+  if(!picked.length) picked = scored.filter(x => x.lenHit)
+    .sort((a,b) => b.score - a.score).slice(0,1);
+  return picked.map(x => x.s);
+}
+
+function composeSignals(hits, market){
+  const tone = MARKETS.signal_tone[market] || {};
+  const premises = [], risks = [], fixes = [], faq = [];
+  let level = null;
+  hits.forEach(s => {
+    const cls = s.class || 'generic';
+    const t = tone[cls] || tone.generic || {};
+    (s.premises || []).slice(0,2).forEach(p => premises.push(p));  // 隐藏前提：中文文案自身默认了什么，与市场无关
+    if(t.risk) risks.push(t.risk);                                   // 市场 × 类别 的判定基调
+    const note = (s.market_notes || {})[market] || (s.market_notes || {})['default'];
+    if(note) risks.push(note);                                       // 该类信号在该市场的具体提示
+    if(s.fix) fixes.push(s.fix);                                  // 只保留该信号自身的针对性建议，不混入通用基调
+    (s.faq || []).slice(0,1).forEach(f => faq.push(f));
+    if(t.level && (level === null || RANK[t.level] > RANK[level])) level = t.level;
+  });
+  const dedup = a => [...new Set(a.filter(Boolean))];
+  const defaults = ['这句话是写给谁看的？','有没有当地人更熟悉的说法？','哪些信息是我默认对方已经知道的？'];
+  const faqOut = dedup(faq).slice(0,3);
+  while(faqOut.length < 3) faqOut.push(defaults[faqOut.length]);
+  return {
+    level: level || 'warn',
+    premises: dedup(premises).slice(0,4),
+    risks: dedup(risks).slice(0,5),
+    rewrite: joinFixes(fixes),
+    faq: faqOut,
+    sources:[], matched:[], signals: hits.map(s => s.label),
+    engine:'rules', mode:'signal', confidence:'low',
+    note:'未命中可溯源案例库 · 以下为基于文案特征的规则推断，置信度低，不代表知乎社区语料佐证，建议人工复核。'
+  };
+}
+
+function baselineResult(){
+  const b = SIGNALS.baseline;
+  return {
+    level:'pass', premises:b.premises, risks:b.risks, rewrite:b.rewrite, faq:b.faq,
+    sources:[], matched:[], signals:[], engine:'rules', mode:'baseline', confidence:'low',
+    note:'未检测到可识别的营销信号 · 该文案跨文化传播风险一般较低，以下为通用核对建议。'
+  };
+}
+
+// —— 中性商品 / 规格描述识别：靠结构特征，不靠穷举商品名 ——
+// 有品牌后缀 / 规格 / 参数等结构，且没有实质营销话术与文化负载符号，就判为「具体商品描述」
+function productStructHit(text){
+  const P = SIGNALS.product;
+  if(!P) return false;
+  let t = text;
+  (P.exclude || []).forEach(w => { t = t.split(w).join(''); });   // 先剔除「品牌/名牌…」这类误伤词
+  if((P.hints || []).some(k => t.includes(k))) return true;
+  try { return !!(P.regex && new RegExp(P.regex).test(t)); } catch(e){ return false; }
+}
+// 这些命中说明是营销/文化话术，不是中性商品描述。
+// 不含 latin：「500ml / A4」这类规格单位里的字母是参数，不该被当成品牌名挡住商品描述识别
+const HEAVY_SIGNALS = ['price','cta','address','classical','superlative','festival',
+                       'emotion','symbol','health'];
+function hasHeavySignal(sigs){ return sigs.some(s => HEAVY_SIGNALS.includes(s.id)); }
+
+function productResult(market){
+  const P = SIGNALS.product;
+  const notes = P.market_notes || {};
+  const note = notes[market] || notes['default'] || '';
+  return {
+    level: market === '港澳' ? 'pass' : 'warn',
+    premises: P.premises,
+    risks: [...P.risks, note].filter(Boolean),
+    rewrite: P.rewrite,
+    faq: P.faq,
+    sources:[], matched:[], signals:[P.label],
+    engine:'rules', mode:'product', confidence:'low', note:P.note
+  };
+}
+
+function localAnalyze(text, market){
+  for(const c of CASES){
+    if(text.includes(c.match)){
+      const hit = c.markets[market] || c.markets['default'];
+      if(hit) return {...hit, matched:[c.id], signals:detectSignals(text).map(s=>s.label),
+                      engine:'golden', mode:'preset', confidence:'high', market, text};
+    }
+  }
+  const hits = RULES.filter(r => r.keywords.some(k => text.includes(k)));
+  if(hits.length) return {...compose(hits, market), signals:detectSignals(text).map(s=>s.label),
+                          mode:'rules', confidence:'high', market, text};
+  const sigs = detectSignals(text);
+  if(productStructHit(text) && !hasHeavySignal(sigs)){
+    return {...productResult(market), market, text};
+  }
+  const result = sigs.length ? composeSignals(sigs, market) : baselineResult();
+  return {...result, market, text};
+}
+
+let CURRENT = null;
+
+function list(items, cls){
+  if(!items || !items.length) return '<div class="empty">无</div>';
+  return '<ul>' + items.map(i => '<li>' + esc(i) + '</li>').join('') + '</ul>';
+}
+
+function render(d){
+  CURRENT = d;
+  const lv = LEVEL[d.level] ? d.level : 'warn';
+  const prof = MARKETS.profiles[d.market] || {};
+  const stance = prof.summary
+    ? '<div class="stance"><b>' + esc(d.market) + ' · ' + esc(prof.stance) + '</b>' +
+      '<span>' + esc(prof.summary) + '</span></div>' : '';
+  const src = (d.sources || []).length
+    ? '<details open><summary>依据来源（' + d.sources.length + ' 条，可溯源）</summary>' +
+      d.sources.map(s => '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' +
+        esc(s.title) + (s.snippet ? ' — ' + esc(s.snippet) : '') + '</a>').join('') + '</details>'
+    : '';
+  const tagHtml = [
+    ...(d.matched || []).map(m => '<span class="tag">命中规则 ' + esc(m) + '</span>'),
+    ...(d.signals || []).map(s => '<span class="tag sig">识别到 ' + esc(s) + '</span>')
+  ].join('');
+  const tags = tagHtml ? '<div class="tags">' + tagHtml + '</div>' : '';
+  const conf = d.confidence === 'low'
+    ? '<div class="conf">⚠ ' + esc(d.note || '以下为低置信度的规则推断，建议人工复核。') + '</div>' : '';
+  $('result').innerHTML =
+    '<div class="result-head"><span class="badge ' + lv + '">' + esc(LEVEL[lv]) + '</span>' +
+      '<span class="meta">' + esc(d.market || '') + ' · ' + esc(MODE[d.mode] || MODE[d.engine] || '') +
+      (d.zhihu_linked ? ' · 已接入知乎语料' : '') + '</span></div>' +
+    stance + conf + tags +
+    '<div class="block"><h3>隐藏前提</h3>' + list(d.premises) + '</div>' +
+    '<div class="block risk"><h3>误读预警</h3>' + list(d.risks) + '</div>' +
+    '<div class="block"><h3>改写建议</h3><div class="rewrite">' + esc(d.rewrite || '（暂无）') + '</div></div>' +
+    '<div class="block"><h3>对方最可能追问</h3>' + list(d.faq) + '</div>' +
+    src +
+    '<div class="actions"><button id="copyBtn">复制校对报告</button><button id="dlBtn">下载 .md 报告</button></div>';
+  $('copyBtn').onclick = copyReport;
+  $('dlBtn').onclick = downloadReport;
+}
+
+function report(d){
+  const li = a => (a || []).map(x => '- ' + x).join('\n') || '- 无';
+  const prof = MARKETS.profiles[d.market] || {};
+  return '# 语境差 · 出海文案语境校对报告\n\n' +
+    '- 目标市场：' + d.market + (prof.stance ? '（' + prof.stance + '）' : '') + '\n' +
+    '- 风险等级：' + LEVEL[d.level] + '\n- 原文案：' + d.text + '\n' +
+    (prof.summary ? '- 市场关系：' + prof.summary + '\n' : '') +
+    '- 命中规则：' + ((d.matched || []).join('、') || '无') + '\n' +
+    '- 识别信号：' + ((d.signals || []).join('、') || '无') + '\n' +
+    '- 分析引擎：' + (MODE[d.mode] || MODE[d.engine] || '') + '\n' +
+    '- 结论性质：' + (d.confidence === 'low' ? '规则推断，置信度低，未附社区语料佐证' : '命中内置案例 / 文化规则库') + '\n\n' +
+    (d.confidence === 'low' ? '> ' + (d.note || '') + '\n\n' : '') +
+    '## 隐藏前提\n' + li(d.premises) + '\n\n## 误读预警\n' + li(d.risks) + '\n\n' +
+    '## 改写建议\n' + (d.rewrite || '无') + '\n\n## 对方最可能追问\n' + li(d.faq) + '\n\n' +
+    '## 依据来源\n' + ((d.sources || []).map(s => '- [' + s.title + '](' + s.url + ')').join('\n') || '- 暂无外部出处（基于中文语境常识）') + '\n';
+}
+
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+async function copyReport(){
+  const txt = report(CURRENT);
+  try{ await navigator.clipboard.writeText(txt); toast('报告已复制到剪贴板'); }
+  catch(e){
+    const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove(); toast('报告已复制');
+  }
+}
+function downloadReport(){
+  const blob = new Blob([report(CURRENT)], {type:'text/markdown;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '语境差_语境校对报告_' + CURRENT.market + '.md';
+  a.click(); URL.revokeObjectURL(a.href); toast('报告已下载');
+}
+
+let DONE_TIMER = null;
+
+function flashResult(){
+  const box = $('result');
+  box.classList.remove('flash');
+  void box.offsetWidth;                 // 强制重排，保证连续点击时高亮动画能重播
+  box.classList.add('flash');
+  const r = box.getBoundingClientRect();
+  const inView = r.top >= 0 && r.top < window.innerHeight * 0.75;
+  if(!inView){                          // 结果不在眼前时，自动送到眼前
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    box.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'start'});
+  }
+}
+
+function markGenerated(){
+  const b = $('run');
+  b.textContent = '已生成 ✅';
+  b.classList.add('done');
+  b.disabled = true;                    // 短暂禁用，防连点，也给一个明确的完成态
+  clearTimeout(DONE_TIMER);
+  DONE_TIMER = setTimeout(() => {
+    b.textContent = '开始语境校对';
+    b.classList.remove('done');
+    b.disabled = false;
+  }, 1500);
+}
+
+async function analyze(userTriggered){
+  const text = $('text').value.trim(), market = $('market').value;
+  if(!text){ $('result').innerHTML = '<div class="empty">请先输入一段中文文案。</div>'; return; }
+  render(localAnalyze(text, market));   // 离线即刻出结果，路演绝不翻车
+  if(userTriggered){ markGenerated(); flashResult(); }   // 结果一生成就送到眼前
+  // 若部署在服务端且后端可用，静默用「知乎语料 + 模型」增强
+  if(location.protocol.startsWith('http')){
+    fetch('/api/analyze', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text, market})})
+      .then(r => r.ok ? r.json() : null).then(d => { if(d) render(d); }).catch(() => {});
+  }
+}
+
+$('run').onclick = () => analyze(true);
+$('market').onchange = () => analyze(true);
+
+const libMap = new Map();
+RULES.forEach(r => (r.sources || []).forEach(s => { if(s.url) libMap.set(s.url, s.title); }));
+$('stats').innerHTML =
+  '<span class="stat"><b>' + RULES.length + '</b> 条文化规则</span>' +
+  '<span class="stat"><b>' + SIGNALS.signals.length + '</b> 类输入信号</span>' +
+  '<span class="stat"><b>' + CASES.length + '</b> 个精选样例</span>' +
+  '<span class="stat"><b>' + MARKETS.list.length + '</b> 个目标市场</span>' +
+  '<span class="stat"><b>' + libMap.size + '</b> 条可溯源出处</span>' +
+  '<span class="stat">零密钥 · 离线可用</span>';
+$('libcount').textContent = libMap.size;
+$('lib').innerHTML = [...libMap].map(([u,t]) =>
+  '<a href="' + esc(u) + '" target="_blank" rel="noopener">▸ ' + esc(t) + '</a>').join('');
+$('chips').innerHTML = SAMPLES.map(s =>
+  '<button class="chip" data-t="' + esc(s) + '">▸ ' + esc(s) + '</button>').join('');
+document.querySelectorAll('.chip').forEach(b => b.onclick = () => { $('text').value = b.dataset.t; analyze(true); });
+
+analyze();   // 首屏默认展示，属初始化，不触发滚动与高亮
+</script>
+</body>
+</html>
