@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>语境差 Context Gap · 统一工作台</title>
+<!-- 85394：内联 data URI favicon（纯 SVG，零外部资源、零网络请求），消除 /favicon.ico 404 -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232f4d7c'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='white' font-family='sans-serif'%3E%E5%B7%AE%3C/text%3E%3C/svg%3E">
 <style>
   :root{
     --bg:#f4f5f7; --panel:#ffffff; --line:#d5dbe3; --soft:#f7f8fa;
@@ -23,18 +25,34 @@
   h1 small{font-size:14px;color:var(--muted);font-weight:400;margin-left:10px;letter-spacing:.06em}
   .sub{color:var(--muted);margin-top:8px;font-size:13.5px;line-height:1.7}
 
-  /* —— 双视图切换栏：桌面居中，手机吸顶 —— */
-  .view-switch{display:flex;gap:8px;margin:18px 0 20px;border-bottom:1px solid var(--line);padding-bottom:0}
+  /* —— 双视图切换栏（85397）：A/B 左右并列卡片，强化醒目度 —— */
+  .switch-hint{display:flex;align-items:center;gap:9px;margin:16px 0 9px;font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.05em}
+  .switch-hint::before{content:"";width:4px;height:14px;background:var(--accent);border-radius:2px;flex:0 0 auto}
+  .switch-hint .hint-note{font-weight:400;color:var(--muted);letter-spacing:0}
+  .view-switch{display:flex;gap:10px;margin:0 0 20px}
   .view-switch button{
-    flex:1;min-height:48px;padding:10px 14px;text-align:left;cursor:pointer;
-    background:transparent;border:1px solid transparent;border-bottom:3px solid transparent;
-    border-radius:6px 6px 0 0;color:var(--muted);font-family:inherit;font-size:14px;font-weight:700;
-    transition:.15s;
+    flex:1 1 0;min-width:0;min-height:62px;padding:12px 16px;text-align:left;cursor:pointer;
+    background:var(--panel);border:1.5px solid var(--line);border-radius:8px;
+    color:var(--text);font-family:inherit;font-size:15px;font-weight:700;
+    box-shadow:0 1px 2px rgba(22,32,46,.05);transition:.15s;
+    display:flex;align-items:flex-start;gap:11px;
   }
-  .view-switch button small{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:2px}
-  .view-switch button:hover{background:var(--soft);color:var(--text)}
-  .view-switch button[aria-selected="true"]{color:var(--accent);border-color:var(--line);border-bottom-color:var(--accent);background:var(--panel)}
-  .view-switch button[aria-selected="true"] small{color:var(--accent)}
+  .view-switch .tab-ico{
+    flex:0 0 auto;width:30px;height:30px;border-radius:7px;background:var(--soft);
+    color:var(--accent);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);
+  }
+  .view-switch .tab-txt{min-width:0}
+  .view-switch .tab-name{display:block;line-height:1.35}
+  .view-switch button small{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:3px;line-height:1.4}
+  .view-switch button:hover{background:var(--soft);border-color:var(--accent)}
+  .view-switch button[aria-selected="true"]{
+    background:var(--accent);border-color:var(--accent);color:#fff;
+    box-shadow:0 3px 10px rgba(47,77,124,.28);
+  }
+  .view-switch button[aria-selected="true"] .tab-ico{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.45)}
+  .view-switch button[aria-selected="true"] small{color:rgba(255,255,255,.92)}
+  .view-switch .sub-short{display:none}
 
   .panel[hidden]{display:none}
   .grid{display:grid;grid-template-columns:390px 1fr;gap:20px;align-items:start}
@@ -131,6 +149,7 @@
   .mode-switch button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
   .mode-switch button:disabled{opacity:.5;cursor:not-allowed}
   .api-hint{font-size:11.5px;color:var(--muted);margin-bottom:14px}
+  /* 85504：评委免口令体验，口令认证 UI 已移除（后端门禁未改） */
   .variants{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .variant{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
   .vhead{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#fff}
@@ -138,7 +157,7 @@
   .variant.conversion .vhead{background:var(--conv)}
   .variant.concise .vhead{background:var(--conc)}
   .vhead .vt{font-size:14px;font-weight:700}
-  .vhead .vd{font-size:10.5px;opacity:.85;font-weight:400;margin-top:2px}
+  .vhead .vd{font-size:12px;opacity:.9;font-weight:400;margin-top:2px}
   .copy{flex:0 0 auto;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.45);color:#fff;border-radius:4px;padding:7px 9px;font-size:11.5px;cursor:pointer;min-height:36px}
   .copy:hover{background:rgba(255,255,255,.28)}
   .vbody{padding:14px}
@@ -175,13 +194,24 @@
     .grid{grid-template-columns:1fr}
     .variants{grid-template-columns:1fr}
     .view-switch{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0;margin-top:10px}
-    .view-switch button{min-height:46px;padding:9px 10px;font-size:13px}
+    .view-switch button{min-height:56px;padding:10px 12px;font-size:14px;gap:9px}
+    .view-switch .tab-ico{width:27px;height:27px;font-size:13px}
+    .switch-hint{margin:14px 0 8px}
     .handoff{flex-direction:column;align-items:stretch}
     .handoff button{width:100%}
   }
-  @media(max-width:420px){.row.two,.row.fixed{grid-template-columns:1fr}}
+  @media(max-width:420px){
+    .row.two,.row.fixed{grid-template-columns:1fr}
+    .view-switch{gap:8px}
+    .view-switch button{padding:9px 9px;font-size:13.5px;gap:7px}
+    .view-switch .tab-ico{width:25px;height:25px;font-size:12px}
+    .view-switch .sub-full{display:none}
+    .view-switch .sub-short{display:inline}
+  }
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<!-- 85511：公开云端 API Base URL（仅公开域名，零凭据）。apiUrl() 在 A/B 主脚本中使用，故须在主脚本执行前完成初始化。 -->
+<script>window.__API_BASE_URL__ = "https://api.contextgap.site";</script>
 </head>
 <body>
 <div class="wrap">
@@ -191,9 +221,16 @@
     <p class="sub">同一个页面完成两件事：先用<b>文化风险检测</b>（离线规则、零密钥）看清中文文案里的隐含前提；再用 <b>AI 本土化广告创作</b>把广告重新写成适合美国英语市场的表达。两项功能可独立使用，检测后也可一键把原文带去创作。</p>
   </header>
 
+  <div class="switch-hint">选择功能 <span class="hint-note">· 两项核心能力，可独立使用，也可先检测再带去创作</span></div>
   <nav class="view-switch" role="tablist" aria-label="功能切换">
-    <button type="button" id="view-a" role="tab" aria-selected="true" aria-controls="panel-a">① 文化风险检测<small>离线规则 · 零密钥 · 结论可溯源</small></button>
-    <button type="button" id="view-b" role="tab" aria-selected="false" aria-controls="panel-b">② AI 本土化广告创作<small>美国英语 · 情感/转化/简洁三型</small></button>
+    <button type="button" id="view-a" role="tab" aria-selected="true" aria-controls="panel-a">
+      <span class="tab-ico" aria-hidden="true">A</span>
+      <span class="tab-txt"><span class="tab-name">文化风险检测</span><small><span class="sub-full">离线规则 · 零密钥 · 结论可溯源</span><span class="sub-short">离线 · 零密钥</span></small></span>
+    </button>
+    <button type="button" id="view-b" role="tab" aria-selected="false" aria-controls="panel-b">
+      <span class="tab-ico" aria-hidden="true">B</span>
+      <span class="tab-txt"><span class="tab-name">AI 本土化广告创作</span><small><span class="sub-full">美国英语 · 情感/转化/简洁三型</span><span class="sub-short">情感 / 转化 / 简洁三型</span></small></span>
+    </button>
   </nav>
 
   <main>
@@ -253,6 +290,8 @@
             <button type="button" id="b-tab-mock">接口联调模式</button>
           </div>
           <p class="api-hint" id="b-api-hint">离线模式展示预置人工案例，不发起任何网络请求。</p>
+          <!-- 85504：评委免口令体验。页面不提供口令/Token 输入框，无需登录即可填写并提交创作请求。 -->
+          <p class="api-hint">免口令体验：无需注册、登录或输入口令；填写下方内容即可发起请求。服务端是否开放真实 AI 由部署配置决定。</p>
           <div class="row">
             <label for="b-original">中文原始广告内容<span class="req">* 必填</span></label>
             <textarea id="b-original" placeholder="粘贴或输入中文广告文案"></textarea>
@@ -323,6 +362,19 @@ const RULES = [{"id": "blue-sky", "keywords": ["蓝天"], "premise": "「蓝天�
 const SIGNALS = {"note": "未命中内置文化规则库时，按输入文本的信号特征给出低置信度的规则推断。这些结论不来自知乎社区语料，不得当作已溯源的社区佐证。", "signals": [{"id": "price", "label": "价格 / 促销 / 数字", "contains": ["元", "块", "折", "价", "包邮", "特惠", "秒杀", "满减", "赠", "送", "免单", "券", "红包", "划算", "白菜价", "亏本", "补贴", "¥", "￥", "$"], "regex": "\\d+(\\.\\d+)?\\s*(元|块|折|币)", "premises": ["默认价格数字自带参照系，读者看到数字就自动脑补「贵还是便宜」，不需要给出比较对象", "默认低价带来的第一反应是「划算」，而不是「质量可疑」"], "risks": ["人民币价格锚点与价格带无法直接迁移，数字在目标市场可能完全失去意义或显得异常廉价", "「包邮」「满减」等履约术语若不说明跨境段、关税与退换，容易在下单后变成纠纷"], "fix": "换成本地币种与本地参照物，明写运费、关税与退换范围，并补一句品质或履约说明支撑低价。", "faq": ["这个价格是本地货币吗？", "这么便宜质量有保障吗？", "运费和关税包含在内吗？"], "market_notes": {"欧美": "欧美市场对超低价敏感度高，缺少品质叙事时容易被归入「便宜没好货」，与国内「薅羊毛」的正向情绪相反。", "东南亚": "东南亚多国币种与价格敏感度差异大，直接搬人民币锚点会失真，部分市场以货到付款为主。", "港澳": "港澳需标明港币/澳门币，并说明「包邮」是否含跨境段，否则易生争议。", "中东": "中东货到付款（COD）占比高，需换算本地币种并写清关税与跨境运费；斋月前后是重要促销节点。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "institution"}, {"id": "cta", "label": "号召 / 紧迫 / 鼓动", "contains": ["冲", "抢", "别错过", "立即", "马上", "赶快", "仅限", "倒计时", "下单", "点击", "速来", "手慢无", "错过", "快来", "开抢", "蹲", "安排", "闭眼入", "无脑", "最后"], "regex": "[!！]{2,}", "premises": ["默认密集的催促与感叹号是「热情有活力」，而不是施加压力", "默认限时、稀缺制造的紧迫感可以不加解释地迁移到别的市场"], "risks": ["高压催促与重复感叹在部分市场容易被读成垃圾信息或诱导，反而降低信任", "FOMO 式话术在广告规范较严的市场可能触发合规审查，且「冲」「安排」直译后语义不通"], "fix": "把「为什么现在买」的理由明说出来，去掉重复催促，给出明确的时效、库存与退换条件。", "faq": ["为什么必须现在决定？", "活动到什么时候结束？", "不买会错过什么？"], "market_notes": {"欧美": "欧美商业文案对强推式 CTA 接受度较低，宜用陈述式理由替代命令式催促。", "东南亚": "社媒私聊下单为主的市场，「点击下单」这一动作本身可能不成立，需对齐当地链路。", "港澳": "港澳惯用繁体与粤语口语，「冲」「闭眼入」会显得是外来广告，距离感反而变大。", "中东": "强推式 CTA 宜改用陈述式理由；促销时间需避开宗教节日与礼拜时段，并做广告合规核对。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "institution"}, {"id": "address", "label": "亲昵称谓 / 社群口吻", "contains": ["家人们", "老铁", "宝子", "亲", "兄弟姐妹", "姐妹们", "兄弟们", "咱", "各位", "朋友们", "小伙伴", "集美", "同学们"], "premises": ["默认陌生消费者可以被当作熟人或家人称呼，且这种亲昵会拉近距离", "默认直播电商的社群氛围是所有市场共通的购物语境"], "risks": ["这类家族式称呼在陌生消费者面前容易显得过度亲密，很多市场的商业文案并不这么用", "这类称谓高度绑定中文平台文化，脱离平台后失去全部语境"], "fix": "换成中性的 you / everyone，靠内容本身而不是称谓制造亲近感。", "faq": ["为什么叫我家人？", "这是直播带货吗？", "说话的人是认识我吗？"], "market_notes": {"欧美": "英文商业文案对陌生消费者极少使用 familial 称呼，直译易被判定为越界。", "东南亚": "部分市场社群购物氛围浓，但仍需核对当地惯用的称呼习惯，不宜照搬内地黑话。", "港澳": "应转繁体并改用本地口语，「家人们」「老铁」会立刻暴露外来广告身份。", "中东": "「家人们」「老铁」在当地语言里没有对应的亲昵称谓，宜改用当地通用的礼貌称呼。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "institution"}, {"id": "classical", "label": "成语 / 雅词 / 含蓄表达", "contains": ["匠心", "传承", "千年", "古法", "祖传", "东方", "国风", "诗意", "意境", "底蕴", "雅致", "尚品", "蕴含", "沉淀", "韵味", "之", "其", "颂", "赋", "典"], "premises": ["默认四字雅词与典故能承载完整论证，读者可自行补全省略的背景", "默认「点到为止、以物寄情」的含蓄是高级感，而不是没说清"], "risks": ["不可证伪的形容词在偏重实证的广告语境里常被判定为无信息量，甚至触发夸大宣传审查", "典故直译后读者无法补全省略的背景，含蓄表达容易让对方读成「看不出具体卖点」"], "fix": "把成语想表达的那层意思直接写成一句白话，并把品质主张换成工时、工序、材料、检测报告等可核验事实。", "faq": ["「古法」具体指什么工艺？", "有检测报告吗？", "和别的产品差在哪里？"], "market_notes": {"欧美": "欧美广告更接受具体数字与第三方标准，「匠心」「千年传承」这类表述说服力弱。", "东南亚": "华人社群能读懂雅词，但多族群市场需补一句情境说明，否则非华裔读者无从进入。", "港澳": "与内地一致，雅词与文言可直接理解，仅需转繁体。", "中东": "「匠心」「千年传承」这类雅词直译后常变成空泛形容词，建议补上可核验的工艺或标准。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "superlative", "label": "绝对化 / 权威宣称", "contains": ["最", "唯一", "全网", "顶级", "国家级", "领先", "销量", "冠军", "认证", "专家", "权威", "首选", "标杆", "王牌", "极致", "无敌", "百分百", "100%", "史无前例", "全网第一", "行业第一", "销量第一", "排名第一", "第一品牌"], "premises": ["默认最高级形容词不需要证据，读者不会追问「凭什么」", "默认内地的认证、奖项与权威背书在别的市场具有同等分量"], "risks": ["unverified superlatives 在广告规范较严的市场容易触发合规审查，需有可核验依据", "内地认证与奖项在别的市场往往不被识别，作为信任锚点几乎无效"], "fix": "改用可验证的具体数字、适用范围与第三方标准名称，去掉无依据的绝对化表述。", "faq": ["这个「第一」依据是什么？", "有哪些第三方认证？", "数据来自哪里？"], "market_notes": {"欧美": "欧美对绝对化宣称的举证要求较严，无依据的最高级用语风险最高。", "东南亚": "各国广告规范差异大，涉及排名与认证需逐市场核对。", "港澳": "港澳对「最」「第一」类宣称亦有规管，宜保留可查证的出处。", "中东": "海湾多国对「最」「第一」类宣称要求可查证依据，宣称也不得涉及宗教与公共秩序。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "claim"}, {"id": "festival", "label": "节庆 / 时间节点", "contains": ["节", "年货", "中秋", "春节", "端午", "国庆", "新年", "开年", "焕新", "开学", "大促", "双11", "双十一", "618", "今日", "本周", "本季", "开春", "入秋", "入冬", "换季"], "premises": ["默认大促节点与节庆自带「该囤货 / 该团圆 / 该送礼」的行动指令", "默认读者知道这些日期，也共享附着在日期上的情绪"], "risks": ["618、双11 在部分市场没有认知基础，直接搬日期只会造成困惑", "节庆的团圆、馈赠联想需要重新解释，否则「为什么现在买」这一环是空的"], "fix": "对齐目标市场的促销与节庆日历，并把「为什么现在买」的理由明写出来。", "faq": ["这个节日是什么时候？", "为什么现在有活动？", "活动持续多久？"], "market_notes": {"欧美": "宜换用 Black Friday、Christmas 等本地节点，或明写促销理由。", "东南亚": "多国节庆与宗教日历不同，需按市场分别核对，避免误用宗教敏感日期。", "港澳": "港澳节庆日历与内地接近，风险较低，但需转繁体并留意本地称呼。", "中东": "618、双11 在当地没有认知基础；斋月、开斋节与当地国庆日才是主要节点，且需尊重宗教氛围。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "emotion", "label": "情感 / 家庭 / 关系", "contains": ["家人", "团圆", "陪伴", "爸妈", "父母", "亲人", "孩子", "礼物", "思念", "懂你", "温柔", "治愈", "仪式感", "暖心", "爱心", "孝心", "牵挂", "归属感", "一家", "全家", "团聚", "尽孝", "情意"], "premises": ["默认「家 / 团圆 / 陪伴」是无需解释的最高正向价值，读者会自动补上整套画面", "默认以物寄情、点到为止的含蓄能被别的市场原样接收"], "risks": ["转译后往往只剩字面物件，情感层与关系层容易丢失，变成一句莫名其妙的陈述", "「孝」「面子」「团圆」在个人主义语境里没有等价概念，含蓄表达常让对方看不出具体卖点"], "fix": "把情感负载明说出来，并补上一个具体使用情境，替读者补上中文里省略的那层关系。", "faq": ["对方会问：这到底是什么产品？", "「团圆」具体指什么场合？", "为什么会联想到家人？"], "market_notes": {"欧美": "宜用具体场景（节日聚餐、日常使用）替代抽象的家庭价值叙事。", "东南亚": "华人社群能接收家庭意象，但多族群市场需补情境说明。", "港澳": "与内地完全共通，这套家庭意象无需解释，转繁体即可。", "中东": "家庭与待客价值在当地同样被重视，但含蓄的以物寄情需改成直白场景描述才能被读出。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "symbol", "label": "意象 / 颜色 / 动物 / 器物", "contains": ["红", "金", "龙", "凤", "竹", "梅", "月", "筷", "灯笼", "福", "喜", "祥", "瑞", "象", "鹤", "鹿", "莲", "荷", "蝠", "中国结", "水墨", "青花", "熊猫"], "premises": ["默认吉祥意象的褒贬可以随翻译一起迁移到别的市场", "默认红金配色天然等于喜庆、高端、节日，视觉不需要额外说明"], "risks": ["动物与植物意象的褒贬跨文化差异极大，部分直译后褒义直接反转", "红色在部分市场关联警示、亏损或政治含义，红金组合也可能被读成廉价促销感"], "fix": "意象与配色按目标市场重选，品牌名优先音译，若保留意象则补一句情境说明，并请本地读者过一遍主视觉。", "faq": ["这个图案有什么寓意？", "为什么用这个颜色？", "是本地设计吗？"], "market_notes": {"欧美": "dragon、white elephant、cock 等均有已知误读风险，红色需核对警示/亏损联想。", "东南亚": "白象在泰、缅、印度等地为神圣吉祥符号，但在部分国家与王室佛教典故相关，避免戏谑或打折调侃。", "港澳": "中英双语并列时，英文部分若直译意象仍可能触发英语负面联想，建议英文另起名。", "中东": "龙、蝙蝠、菊花等吉祥寓意在当地没有对应概念；动物与人物形象、酒类、部分颜色还需核对宗教与生活禁忌。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "health", "label": "健康 / 身体 / 功效", "contains": ["养", "补", "瘦", "美白", "抗", "嫩", "润", "排毒", "气血", "湿", "寒", "健", "肤", "肌", "气色", "调理", "养生", "0糖", "无添加", "天然", "纯", "轻"], "premises": ["默认「上火」「祛湿」「补气」这类身体观是生活常识，功效不需要额外解释", "默认「天然」「0 糖」自带健康正向，读者会自动补全因果"], "risks": ["传统身体观在别的语言里没有对应体系，直译常变成无意义或伪科学表述", "涉及功效与肤色表述可能同时触碰健康宣称合规红线与种族敏感议题"], "fix": "改用可感知的成分、口感与检测数据描述，先查目标市场健康宣称规范，避开医疗功效与肤色优劣表述。", "faq": ["「祛湿」是什么意思？", "这算保健品还是食品？", "有临床依据吗？"], "market_notes": {"欧美": "健康宣称受严格规管，美白类表述还涉及肤色敏感议题，属高风险区。", "东南亚": "部分市场有清真、成分与标签的额外要求，需逐项核对。", "港澳": "港澳对健康声称亦有规管，繁体标签的成分标示需合规。", "中东": "健康、美白与成分宣称需符合当地标签与广告规范，部分品类另有认证要求。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "claim"}, {"id": "latin", "label": "中英混排 / 拼音 / 外文名", "regex": "[A-Za-z]{2,}", "premises": ["默认中英混排能同时被中文与外文读者读通", "默认出现英文就代表这个名称已经做过本地化校验"], "risks": ["拼音或直译英文名常带意外歧义，是品牌出海最经典的事故来源", "中英并列时，中文部分无误但英文部分可能单独触发负面联想"], "fix": "把品牌名与英文名拆开做母语者复核，不要默认中文名的直译或拼音可以直接使用。", "faq": ["这个英文名是什么意思？", "名字是本地起的吗？", "中英文名为什么不一样？"], "market_notes": {"欧美": "需核对英语口语、金融与俚语中的歧义，仅查字典义不够。", "东南亚": "多语环境下还需核对当地语言（泰语、马来语、越南语）中的谐音。", "港澳": "港澳常见中英并列，英文部分的负面联想尤其容易被本地读者读出。", "中东": "名称需核对阿拉伯语与英语的读音、含义及宗教敏感联想，不能只查字典义。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "brand"}, {"id": "short", "label": "极简短句", "max_len": 12, "premises": ["短句承载的省略最多：主语、场景、因果全都被省掉，默认读者能自行补全", "默认一个词就足以唤起整代人共享的情绪或共识"], "risks": ["越短越依赖共享语境，跨语言后最容易被对方读成「看不出是什么产品」", "极短文案常同时是梗或成语，翻译后只剩字面，语气与情绪全部丢失"], "fix": "补上「谁在对谁说话、为什么这件事值得在意」，把被省略的前提至少写出一句。", "faq": ["对方会问：这句到底想说什么？", "这是给谁看的？", "有没有更直白的说法？"], "market_notes": {"欧美": "偏直白的广告语境里，极短含蓄句最容易被判定为信息不足。", "东南亚": "多语市场里极短句更易丢失语境，建议补一句情境说明。", "港澳": "港澳中文广告接受短句与文言节奏，风险相对较低。", "中东": "极短含蓄句在跨语言转译后最容易丢失语境，建议补一句场景说明。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}, {"id": "long", "label": "长叙述", "min_len": 60, "premises": ["默认读者会逐句读完长文案并自行串联逻辑", "默认关键前提即使埋在末尾也会被读到"], "risks": ["阅读路径与信息密度习惯不同，长叙述在部分市场容易被跳过", "埋在中后段的文化前提一旦被跳过，整段论证就失去支撑"], "fix": "把关键前提与卖点前置，重要信息不依赖上下文补全，必要时拆成可扫读的短块。", "faq": ["重点是哪一句？", "可以一句话说完吗？", "前提在哪里交代的？"], "market_notes": {"欧美": "偏好可扫读的结构与前置结论，长段落宜拆分。", "东南亚": "移动端阅读占比高，长叙述宜进一步压缩。", "港澳": "繁体长文案需留意排版与断句节奏。", "中东": "阿拉伯语阅读方向与排版不同，长叙述宜前置结论并压缩，关键前提不要埋在末尾。", "default": "请按目标市场的语言、制度与合规要求，请本地读者试读核对。"}, "class": "culture"}], "baseline": {"premises": ["未检测到可识别的中文营销信号，这段文案可能已是中性陈述或产品规格说明", "中性文案通常不依赖文化共识，但专有名词、单位与认证编号仍可能需要本地化"], "risks": ["这类文案跨文化传播风险一般较低；若有品牌名、度量单位、认证编号或日期格式，请单独做本地化核对", "本结论为规则推断、置信度低，不代表已经过社区语料佐证"], "rewrite": "保持中性直白即可；把品牌名、度量单位、认证编号与日期格式单独列出来逐项复核。", "faq": ["对方会问：这是写给谁看的？", "对方会问：本地有更常见的说法吗？", "对方会问：这里是不是省略了什么背景？"]}, "product": {"label": "中性商品 / 规格描述", "note": "识别到具体商品或规格描述、但未检出营销话术与文化负载符号时的独立结论：文化层面风险低，风险集中在单位、认证、品类叫法与标签合规。属规则推断，置信度低，未附社区语料佐证。", "hints": ["牌", "型号", "规格", "净含量", "容量", "材质", "尺寸", "适用于", "专用", "专供", "系列", "套装", "件套", "毫升", "厘米", "英寸", "克重", "净重", "本品", "本产品", "这款", "该款", "升级款", "经典款", "新款", "同款", "款式", "件套", "适用年龄"], "exclude": ["品牌", "名牌", "王牌", "金牌", "奖牌", "铭牌", "门牌", "车牌", "牌照", "牌匾", "牌面", "牌位", "牌号", "打牌", "扑克", "招牌", "老牌", "挂牌", "牌桌"], "regex": "\\d+\\s*(ml|mL|ML|cm|CM|g|kg|KG|英寸|毫升|厘米|克|件|片|只|支|台|套|包|盒|瓶|袋)", "premises": ["默认读者一看品类或品牌名就知道这是什么、怎么用，不需要补一句用途说明", "默认规格单位、净含量与材质在本地也是通用写法，不需要换算或对照", "默认「这是常见日用品」本身不构成文化门槛，页面上不必解释品类"], "risks": ["这类文案几乎没有寓意、典故与情感叙事，跨文化的语义丢失风险低；真正要处理的是规格单位、安全认证、品类在当地叫什么、标签是否合规，而不是「翻译」", "品牌名若沿用中文或拼音，仍需单独核对在目标语言里有没有意外歧义"], "rewrite": "保留中性直白的商品描述，补一句用途与适用场景；把规格换算成目标市场通用单位，列清材质、安全认证与警示标示，并确认品类使用当地通行的叫法。", "faq": ["对方会问：这个规格换算成本地单位是多少？", "对方会问：有当地认可的安全 / 质检认证吗？", "对方会问：这类产品在当地通常叫什么名字？"], "market_notes": {"欧美": "重点核对英制 / 公制换算、适用的安全认证与警示标签，以及品类在英语里的通行叫法；配件与年龄分级标示也可能影响上架。", "中东": "需核对阿拉伯语标签、海湾地区认证与货到付款履约；若材质涉及动物来源、酒精或人物形象，先做宗教与生活禁忌核对。", "东南亚": "各国标签、币种与认证要求不一，部分市场另有清真与成分标示要求；多语环境下品类名宜逐一试读。", "港澳": "与内地文化共通，商品描述无需解释；仅需转繁体，核对本地惯用品类名与机电 / 安全规格的本地标示要求。", "default": "请把规格单位、认证编号与品类叫法逐项交给本地读者核对。"}}};
 const MARKETS = {"list": ["欧美", "中东", "东南亚", "港澳"], "order_note": "按与内地共享文化前提的多少，由远及近排列", "profiles": {"欧美": {"stance": "跨语言 · 跨文化", "shared": "共享前提极少", "summary": "中文文案里没写出的默认前提，目标读者大多不具备；翻译后语义常丢失或反转，广告合规要求也较严。"}, "中东": {"stance": "异质文化圈", "shared": "中文吉祥符号基本没有对应概念", "summary": "祥瑞意象、典故与谐音在当地读不到寓意、只剩字面；动物与人物形象、酒类、部分颜色、身体表述还可能触碰宗教与生活禁忌，需本地合规核对。"}, "东南亚": {"stance": "部分共享 · 多族群", "shared": "华人社群能读懂部分意象", "summary": "华人读者能接收不少中文意象，但多族群市场里非华裔读者未必共享；币种、支付、履约与宗教日历各国不同，需逐市场核对。"}, "港澳": {"stance": "同文化圈", "shared": "与内地共享绝大多数文化前提", "summary": "港澳读者与内地读者对典故、节庆、亲情、吉祥意象的理解基本一致，无需解释；差异集中在繁简书面语、粤语口语、制度与履约用语、币种与支付习惯。"}}, "by_class": {"港澳": {"culture": {"level": "pass", "reading": "这层寓意在港澳与内地理解一致，读者直接就能读懂，无需解释或改写。", "fix": "保持原文即可；如投放本地媒体，仅需转繁体书面语并留意粤语节奏。"}, "institution": {"level": "warn", "reading": "文化前提是共通的，但这是内地平台与制度口径下的用语，港澳在书面语、币种、支付与履约习惯上另有本地规则。", "fix": "转繁体并改用港澳惯用说法；标明港币／澳门币，写清跨境段运费、关税与退换方式，对齐本地支付与物流时效。"}, "brand": {"level": "warn", "reading": "中文部分没问题，但港澳商业文案常中英并列，英文名或拼音仍可能被按英语读出负面歧义。", "fix": "中文保留并转繁体，英文副标题另起一个在英语里无歧义的名称，不要直译。"}, "claim": {"level": "warn", "reading": "这类宣称港澳本地同样有规管，且繁体标签的成分、认证与标示要求与内地不同。", "fix": "保留可查证的出处，按港澳广告与标签规范核对，并用繁体标示成分与认证编号。"}, "generic": {"level": "warn", "reading": "与内地文化共通，未发现需要解释的文化前提；主要需核对繁简书面语与本地惯用词。", "fix": "转繁体，并请本地读者试读一遍即可。"}}, "中东": {"culture": {"level": "warn", "reading": "这类祥瑞意象、典故或谐音在当地没有对应概念，读者只会读到字面、不会调出寓意；动物与人物形象、酒类、部分颜色及身体相关元素还可能触及宗教与生活禁忌。", "fix": "不要依赖符号与谐音，把想表达的意思直接写成白话；涉及动物、人物、酒类、颜色、身体或裸露的素材先做本地合规核对，必要时更换。"}, "institution": {"level": "warn", "reading": "币种、支付、履约与标签口径不同：货到付款在当地占比高，阿拉伯语标签与本地认证要求也需满足。", "fix": "换算本地币种，写清跨境时效与退换责任，支持当地主流支付，并核对阿拉伯语标签与认证要求。"}, "brand": {"level": "warn", "reading": "拼音与直译名在当地语言里通常不承载语义，还需核对阿拉伯语与英语中的读音、含义及宗教敏感联想。", "fix": "另取在当地语言中无歧义、无宗教敏感联想的名称，并把品牌含义写成白话。"}, "claim": {"level": "danger", "reading": "健康、美白、绝对化与运势类宣称在当地广告规管较严，涉及身体、宗教与公共秩序的表述尤其容易触碰红线。", "fix": "去掉功效与运势承诺，改用可核验的具体描述；投放前请本地合规人员逐句核对。"}, "generic": {"level": "warn", "reading": "这类表述依赖中文默认共识，当地读者缺少对应语境、寓意读不到；个别元素还需核对宗教与生活禁忌。", "fix": "把省略的前提写成白话，并请本地读者与合规人员试读。"}}, "东南亚": {"culture": {"level": "warn", "reading": "华人社群能读懂这类中文意象，但多族群市场里非华裔读者未必共享；部分意象还与佛教或王室典故相关。", "fix": "保留意象并补一句情境说明，避免用于戏谑、打折调侃或宗教相关场合。"}, "institution": {"level": "warn", "reading": "各国币种、价格敏感度与支付习惯差异大，货到付款与社媒私聊下单在不少市场是主流。", "fix": "换算本地币种与价格带，把下单入口放到当地主流链路，写清跨境履约与退换。"}, "brand": {"level": "warn", "reading": "多语环境下，名称需同时核对英语与当地语言（泰语、马来语、越南语等）的谐音与含义。", "fix": "在主要本地语言中逐一试读名称，必要时另起本地名。"}, "claim": {"level": "warn", "reading": "各国广告规范差异大，部分市场另有清真、成分与标签要求。", "fix": "逐市场核对宣称依据与标签规范，保留可查证的认证编号。"}, "generic": {"level": "warn", "reading": "华人读者能接收一部分，但多族群受众未必共享这套前提，需按市场分别核对。", "fix": "补一句情境说明，并请当地读者试读。"}}, "欧美": {}}, "signal_tone": {"港澳": {"culture": {"level": "pass", "risk": "与内地共通，这类表达港澳读者能直接理解，无需改写。", "fix": "保持原文，仅需转繁体书面语。"}, "institution": {"level": "warn", "risk": "文化前提共通，但币种、支付、履约与本地惯用说法需对齐港澳口径。", "fix": "转繁体、标明港币／澳门币、写清跨境段运费与退换，改用本地惯用说法。"}, "brand": {"level": "warn", "risk": "中文没问题，但中英并列时英文／拼音名仍可能被按英语读出负面歧义。", "fix": "中文转繁体，英文副标题另起无歧义名称。"}, "claim": {"level": "warn", "risk": "这类宣称港澳本地同样有规管，繁体标签标示要求也不同。", "fix": "保留可查证出处，按港澳广告与标签规范核对。"}, "generic": {"level": "warn", "risk": "未发现需要解释的文化前提，主要需核对繁简与本地惯用词。", "fix": "转繁体并请本地读者试读。"}}, "中东": {"culture": {"level": "warn", "risk": "中文意象与典故在当地没有对应概念、只剩字面，个别元素还需核对宗教与生活禁忌。", "fix": "把寓意写成白话，动物／人物／酒类／颜色等素材先做本地合规核对。"}, "institution": {"level": "warn", "risk": "货到付款占比高，币种、跨境履约与阿拉伯语标签要求需逐项核对。", "fix": "换算本地币种、支持当地支付、核对阿拉伯语标签与认证。"}, "brand": {"level": "warn", "risk": "拼音与直译名在当地语言里不承载语义，且需避开宗教敏感联想。", "fix": "另取当地语言中无歧义的名称，并把品牌含义写成白话。"}, "claim": {"level": "warn", "risk": "健康、绝对化与运势宣称在当地规管较严，易触碰合规红线。", "fix": "去掉功效与运势承诺，改用可核验描述并做本地合规复核。"}, "generic": {"level": "warn", "risk": "当地读者缺少中文默认语境，寓意读不到；个别元素需核对禁忌。", "fix": "把省略的前提写成白话并请本地读者试读。"}}, "东南亚": {"culture": {"level": "warn", "risk": "华人社群能读懂，但多族群市场里非华裔读者未必共享这套意象。", "fix": "保留意象并补一句情境说明，避免戏谑或宗教相关调侃。"}, "institution": {"level": "warn", "risk": "各国币种、价格带与支付习惯差异大，货到付款与社媒下单更主流。", "fix": "换算本地币种、对齐当地下单链路并写清跨境履约。"}, "brand": {"level": "warn", "risk": "多语环境下名称需在英语与当地语言中逐一核对谐音与含义。", "fix": "在主要本地语言中试读名称，必要时另起本地名。"}, "claim": {"level": "warn", "risk": "各国广告规范差异大，部分市场另有清真与标签要求。", "fix": "逐市场核对宣称依据与标签规范。"}, "generic": {"level": "warn", "risk": "华人读者能接收一部分，多族群受众需按市场分别核对。", "fix": "补一句情境说明并请当地读者试读。"}}, "欧美": {"culture": {"level": "warn", "risk": "中文意象与典故在目标市场没有等价概念，翻译后寓意常丢失或被反向解读。", "fix": "把想表达的意思写成白话，不要依赖读者自行补全中文里省略的那层语境。"}, "institution": {"level": "warn", "risk": "价格锚点、履约承诺与平台玩法难以直接迁移，也可能触发广告规范审查。", "fix": "换算币种与参照物，写清跨境时效与退换，用陈述式理由替代强推话术。"}, "brand": {"level": "warn", "risk": "拼音或直译名常在英语里带意外歧义，是品牌出海最常见的事故来源。", "fix": "核对英语口语、金融与俚语含义，另起无歧义名称。"}, "claim": {"level": "warn", "risk": "绝对化、健康与功效宣称在目标市场举证要求严格。", "fix": "保留可查证出处，去掉无依据的最高级与功效承诺。"}, "generic": {"level": "warn", "risk": "这类表述依赖中文默认共识，目标读者未必共享。", "fix": "把省略的前提明写出来，并请本地读者试读。"}}}};
 const CREATIVE = {"note": "中文创意机制形式层识别规则：离线、确定性、零密钥。命中只表示文案采用了某种表达手法，属于创意机制/营销意图层面的观察，不等于存在文化风险；不得据此抬高风险等级，也不得据此生成 risks。七类机制与 B 功能 ai_prompts.py / tests/build_creative_fixtures.py 的分类规范保持一致。", "version": "1.0", "categories": [{"id": "colloquial", "label": "口语化表达", "desc": "第一人称复数号召、口语催促、互动语气词等口语化表达手法。", "keywords": ["我们一起", "一起来", "咱们", "走起", "嗨起来", "约起来", "动起来", "拿起", "家人们", "冲呀", "安排上", "搞起来"], "regexes": [], "whitelist_chars": "", "premises": ["文案使用第一人称号召或口语语气词，营造参与感与亲近感，属表达手法。"], "note": "口语化号召属于创意表达手法，不等于电商紧迫性 CTA，也不构成跨文化误读证据。", "confidence": "medium", "strong": true}, {"id": "reduplication", "label": "叠词与重复", "desc": "ABAB / AABB / AA 叠写、拟声重复、越X越Y 等重复修辞。", "keywords": [], "regexes": [{"regex": "([\\u4e00-\\u9fa5]{2})\\1", "label": "ABAB 叠写"}, {"regex": "([\\u4e00-\\u9fa5])\\1([\\u4e00-\\u9fa5])\\2", "label": "AABB 叠写"}, {"regex": "([\\u4e00-\\u9fa5])\\1", "label": "AA 叠写"}, {"regex": "越[\\u4e00-\\u9fa5]{1,3}越", "label": "越X越Y 递进重复"}], "whitelist_chars": "看看想想刚刚渐渐慢慢悄悄轻轻微微试试常常往往明明偏偏等等", "premises": ["文案使用叠词或重复修辞强化节奏与记忆点，属形式层表达手法。"], "note": "叠词本身在多数市场不构成文化风险；普通自然重复（看看/想想/刚刚/渐渐等）由白名单排除，不计入创意叠词。", "confidence": "medium", "strong": true}, {"id": "rhythm", "label": "押韵与节奏", "desc": "短分句排比、越X越Y 递进、句末押韵等节奏特征（形式层，非音韵质量判断）。", "keywords": [], "regexes": [{"regex": "越[\\u4e00-\\u9fa5]{1,3}越", "label": "越X越Y 递进节奏"}, {"regex": "一[\\u4e00-\\u9fa5]一[\\u4e00-\\u9fa5]", "label": "一X一Y 并列节奏"}], "min_short_clauses": 2, "clause_max_len": 12, "rhyme_groups": [{"group": "ou", "chars": "受愁手头够有秀厚柔舟留楼走口后友久九酒"}, {"group": "ang", "chars": "光忙亮强香长尝房方唱上望忘网王黄"}], "whitelist_chars": "", "premises": ["文案使用短分句排比或句末押韵营造节奏感，属形式层表达手法。"], "note": "节奏特征的识别仅为形式层观察，是否真正朗朗上口、押韵是否自然属语义层，应由 B 的 AI 判断；不构文化风险证据。", "confidence": "low", "strong": false}, {"id": "homophone", "label": "谐音与双关", "desc": "以引号换字、谐音字替换实现的双关（如「沸」腾、万「盒」如意）。", "keywords": ["「沸」", "「盒」", "「蝠」", "「柿」", "「栗」", "「意」", "「财」", "「发」"], "regexes": [{"regex": "「[\\u4e00-\\u9fa5]」", "label": "引号换字结构"}], "hint_chars": "沸盒蝠柿栗意财发", "whitelist_chars": "", "premises": ["文案使用引号换字或谐音字替换制造双关，属文字表达手法。"], "note": "仅当引号内为已知谐音提示字时才计；普通引号强调（如真正的「品质」）不计。谐音双关是否跨语言成立属语义层，应由 B 的 AI 判断。", "confidence": "medium", "strong": true}, {"id": "slang", "label": "网络流行语", "desc": "网络流行语与社媒常用表达。", "keywords": ["yyds", "YYDS", "真的会谢", "绝绝子", "种草", "内卷", "躺平", "打工人", "破防", "emo", "扎心", "奥利给", "栓Q", "尊嘟", "上头"], "regexes": [], "whitelist_chars": "", "premises": ["文案使用网络流行语贴近年轻受众，属语域选择。"], "note": "网络语的新旧与受众接受度因市场而异，此处仅识别字面出现，不判定传播效果。", "confidence": "medium", "strong": true}, {"id": "dialect", "label": "方言与地域表达", "desc": "方言词、地域口语表达。", "keywords": ["巴适", "晓得", "老铁", "咋", "啥", "俺", "侬", "靓", "得劲", "莫得", "安逸", "摆龙门阵", "侬好", "阿拉"], "regexes": [], "whitelist_chars": "", "premises": ["文案使用方言或地域口语塑造亲切感与在地感，属语域选择。"], "note": "方言表达可能带地域文化负载，是否需要在目标市场解释属语义层，应由 B 的 AI 结合具体受众判断。", "confidence": "medium", "strong": true}, {"id": "wordplay", "label": "成语与文字游戏", "desc": "成语改编、换字、文字游戏。", "keywords": ["一心一「意」", "万「盒」如意", "一「意」孤行", "「意」想不到", "别出「新」裁"], "regexes": [{"regex": "一[\\u4e00-\\u9fa5]一[\\u4e00-\\u9fa5]", "label": "一X一Y 成语框架"}], "whitelist_chars": "", "premises": ["文案使用成语改编或文字游戏制造记忆点，属修辞表达手法。"], "note": "标准成语原词由既有 proverb 风险规则处理，本类只识别改编/换字结构，避免重复计风险。", "confidence": "low", "strong": true}]};
+
+/* 85474：统一 API 基址（本地同源留空；公网部署设独立 HTTPS API 域名）。
+   A 功能为离线规则引擎，此增强请求失败会被 .catch 吞掉，不影响离线结果。 */
+const API_BASE_URL = (function(){
+  var v = (typeof window !== 'undefined' && typeof window.__API_BASE_URL__ === 'string')
+    ? window.__API_BASE_URL__
+    : ((location.protocol === 'http:' || location.protocol === 'https:') ? '' : '');
+  return String(v || '').replace(/\/+$/, '');
+})();
+function apiUrl(path){
+  var p = String(path || ''); if (p.charAt(0) !== '/') p = '/' + p;
+  return API_BASE_URL + p;
+}
 
 const $ = id => document.getElementById('a-' + id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -664,7 +716,7 @@ function render(d){
     '<div class="block"><h3>改写建议</h3><div class="rewrite">' + esc(d.rewrite || '（暂无）') + '</div></div>' +
     '<div class="block"><h3>对方最可能追问</h3>' + list(d.faq) + '</div>' +
     src +
-    '<div class="actions"><button id="copyBtn">复制校对报告</button><button id="dlBtn">下载 .md 报告</button></div>';
+    '<div class="actions"><button id="a-copyBtn">复制校对报告</button><button id="a-dlBtn">下载 .md 报告</button></div>';
   $('copyBtn').onclick = copyReport;
   $('dlBtn').onclick = downloadReport;
 }
@@ -754,7 +806,7 @@ async function analyze(userTriggered){
   if(userTriggered){ markGenerated(); flashResult(); }   // 结果一生成就送到眼前
   // 若部署在服务端且后端可用，静默用「知乎语料 + 模型」增强
   if(location.protocol.startsWith('http')){
-    fetch('/api/analyze', {method:'POST', headers:{'Content-Type':'application/json'},
+    fetch(apiUrl('/api/analyze'), {method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({text, market})})
       .then(r => r.ok ? r.json() : null).then(d => { if(d) render(d); }).catch(() => {});
   }
@@ -790,6 +842,26 @@ window.A = {getText: function(){ return document.getElementById('a-text').value;
 
 const OFFLINE_DATA = {"meta": {"version": "phase2-a-offline-prototype", "mode": "offline-demo", "notice": "当前为离线演示模式，展示的是预置案例，不代表 AI 实时生成结果。", "input_language": "中文", "target_market": "美国", "output_language": "英语", "note": "案例为人工编写，仅用于演示本土化改写思路。所有英文字句均不含未经证实的功效、认证、优惠、销量、用户评价或市场数据。中文回译表达英文在当地语境中的实际意思，非逐字翻译。"}, "variants_meta": {"emotional": {"label": "情感型", "desc": "强调情绪连接与生活场景，不夸大产品效果"}, "conversion": {"label": "转化型", "desc": "强调清晰卖点与行动引导，不虚构优惠或评价"}, "concise": {"label": "简洁型", "desc": "短句、易读、直接，适合快速浏览的广告场景"}}, "cases": [{"id": "tea-gift-box", "name": "茶叶礼盒 · 亲友送礼", "input": {"original_zh": "孝心好礼，送长辈倍有面子。精选好茶，滋养身心，健康伴年年。", "product_name": "", "product_category": "食品饮料 / 茶叶礼盒", "product_facts": "三种茶叶组合装、独立小包装、礼盒包装、附中文冲泡说明", "channel": "Facebook", "tone": "亲切自然"}, "variants": {"emotional": {"title_en": "A Thoughtful Gift They'll Actually Use", "body_en": "Three carefully selected teas, wrapped in a gift box that's easy to give. Individually packed for freshness, with simple brewing notes inside. A small way to say you were thinking of them.", "back_translation_zh": "三款精心挑选的茶，装进一份送得出手的礼盒。独立小包保持新鲜，盒内附有简单的冲泡说明。一个让你表达惦念的小小心意。", "reason_zh": "中文原稿以「孝心」「面子」为核心，直译在美国语境里会显得说教且难以共鸣；改为「贴心、对方真的会用」的日常表达，并把「精选好茶」落到可被看见的包装与冲泡说明上。", "use_case_zh": "Facebook 节日或生日送礼场景图文，面向亲友推荐", "culture_risk_zh": "「滋养身心 / 健康伴年年」属健康功效表述，无可靠依据不宜出现，已移除；「送长辈有面子」涉及孝道与面子文化，直译易让美国读者困惑，已改为通用送礼心意。需人工核验茶品数量与礼盒内容与实物一致。"}, "conversion": {"title_en": "Three Teas, One Ready-to-Gift Box", "body_en": "A mixed gift set with three selected teas, each in individual sachets. Brewing instructions included. Ready to give as-is, with no extra wrapping needed.", "back_translation_zh": "三款茶的组合礼盒，每款独立小袋装，附冲泡说明，拿到就能直接送人，不用再另外包装。", "reason_zh": "把中文的情绪型卖点换成可核对的规格事实（三种茶、独立包装、含说明），并用 ready to give 做轻量行动暗示，不编造优惠或销量。", "use_case_zh": "Facebook 商品帖、节庆前礼品推荐帖", "culture_risk_zh": "数量与包装形式需与实物一致；避免使用 best-selling、top-rated 等未经证实的表述；食品类广告勿暗示疾病预防或健康疗效。"}, "concise": {"title_en": "Tea Gift Set", "body_en": "Three teas. Individual sachets. Ready to gift.", "back_translation_zh": "三款茶、独立小袋、拆开就能送。", "reason_zh": "只保留最关键的三个事实，短句便于快速浏览与信息流截断场景。", "use_case_zh": "Facebook 图片广告短文案、礼品类目商品标题", "culture_risk_zh": "短句同样构成事实陈述，三种茶与独立包装需核实；不要在简写中夹带健康暗示。"}}}, {"id": "portable-blender", "name": "便携榨汁杯 · 通勤场景", "input": {"original_zh": "轻松瘦身，排毒养颜，一杯搞定健康好身材！", "product_name": "", "product_category": "小家电 / 便携榨汁杯", "product_facts": "USB 充电、350ml 容量、可拆洗刀头、便携随行杯", "channel": "Instagram", "tone": "年轻活泼"}, "variants": {"emotional": {"title_en": "Your Smoothie, Wherever the Day Goes", "body_en": "A blender that fits in your bag. Charge it with USB, blend a 350ml drink, rinse the detachable blade, and head out. Made for mornings that don't sit still.", "back_translation_zh": "一只装得进包里的榨汁杯。USB 充电，打一杯 350 毫升的饮品，刀头拆下来冲一冲就能带走。为停不下来的早晨准备的。", "reason_zh": "中文原稿以瘦身、排毒、养颜、好身材为卖点，这类功效在美国属于需要可靠证据支撑的健康宣称；改写聚焦便携、充电、易清洗这些可验证的使用体验。", "use_case_zh": "Instagram 生活方式图文、早间通勤或运动后场景短视频配文", "culture_risk_zh": "排毒 detox、瘦身 weight loss、养颜均已移除，除非有可靠证据并符合当地法规，否则不得加回；健康好身材是结果承诺，不能作为产品功效。需人工核验容量与 USB 充电描述。"}, "conversion": {"title_en": "Blend a 350ml Drink Anywhere", "body_en": "USB-rechargeable portable blender with a 350ml capacity. The blade detaches for easy rinsing. Use it at home, at the gym, or on the road.", "back_translation_zh": "USB 充电便携榨汁杯，容量 350 毫升，刀头可拆方便冲洗，家里、健身房、路上都能用。", "reason_zh": "用可核对的规格（容量、充电方式、可拆洗）替代不可证实的功效承诺，结尾的场景列举是用法说明而不是效果保证。", "use_case_zh": "Instagram 商品图文、Reels 短视频口播文案", "culture_risk_zh": "规格参数需与实物一致；不要写 lose weight、detox、burn fat 等功效；电器如涉及电池与安全说明需另行核实。"}, "concise": {"title_en": "Blend on the Go", "body_en": "USB charge. 350ml. Rinse and go.", "back_translation_zh": "USB 充电、350 毫升、冲一冲就走。", "reason_zh": "三个事实短语，适合短视频字幕与图片广告的极短文案。", "use_case_zh": "Instagram Story、限时动态字幕", "culture_risk_zh": "350ml 为事实陈述需核实；不添加任何减重或排毒暗示。"}}}, {"id": "chinese-learning-app", "name": "中文学习 App · 效果宣称", "input": {"original_zh": "三分钟开口说中文，包教包会，轻松掌握地道中文！", "product_name": "", "product_category": "教育科技 / 语言学习 App", "product_facts": "每日10分钟课程、真人发音示范与录音对比、课程可离线下载", "channel": "Google Ads", "tone": "专业可信"}, "variants": {"emotional": {"title_en": "Start Speaking Chinese, One Short Lesson at a Time", "body_en": "Ten minutes a day is enough to build a habit. Hear native pronunciation, record yourself, and compare. Lessons download for offline practice, so a long flight doesn't have to be a break.", "back_translation_zh": "每天十分钟，就够把学中文变成习惯。听真人发音、自己录音做对比；课程可下载离线练，长途飞行也不用中断。", "reason_zh": "中文原稿的三分钟开口、包教包会、轻松掌握地道都是结果保证，美国广告对 guaranteed 类表述较敏感；改为描述学习方式与可核对的功能。", "use_case_zh": "Google Ads 搜索广告着陆页首屏、App 介绍页", "culture_risk_zh": "包教包会等保证已从改写中移除，是否以其他形式保留需人工核定；native pronunciation 需确认录音来源真实；不要写 fluent in 3 minutes 类绝对化承诺。"}, "conversion": {"title_en": "Learn Chinese in 10-Minute Lessons", "body_en": "Daily 10-minute lessons with native-speaker audio and recording practice. Download lessons and study offline, on your own schedule.", "back_translation_zh": "每天 10 分钟课程，配真人发音音频和录音练习。课程可下载离线学，按自己的时间安排。", "reason_zh": "把不可证实的三分钟开口换成可核对的产品功能与时长，用 on your own schedule 表达自主性，不虚构优惠。", "use_case_zh": "Google Ads 搜索广告描述、应用商店简介", "culture_risk_zh": "10 分钟、离线下载、真人音频需与产品一致；不得写 guaranteed to learn 或 speak fluently in days；任何退款承诺都需人工核定。"}, "concise": {"title_en": "Chinese, 10 Minutes a Day", "body_en": "Native audio. Record and compare. Learn offline.", "back_translation_zh": "真人发音、录音对比、离线学习。", "reason_zh": "三句短功能点，适配搜索广告字符限制与快速浏览。", "use_case_zh": "Google Ads 标题与描述、信息流短文案", "culture_risk_zh": "功能点需核实；不夹带包会或保证类承诺。"}}}, {"id": "storage-bin", "name": "折叠收纳箱 · 居家整理", "input": {"original_zh": "一秒收纳，让家瞬间整洁，品质生活从这里开始！", "product_name": "", "product_category": "家居收纳 / 折叠收纳箱", "product_facts": "可折叠收纳、可堆叠、带防尘盖、多色可选", "channel": "TikTok", "tone": "年轻活泼"}, "variants": {"emotional": {"title_en": "A Place for the Things You Don't Use Every Day", "body_en": "Fold them flat when you need the space, stack them when you don't. A lid keeps dust out and the clutter off your shelf. Small change, calmer room.", "back_translation_zh": "需要空间时把它们压扁收起来，不用时叠放。带盖子挡灰，架子不再乱糟糟。一个小改变，房间清爽一点。", "reason_zh": "中文的一秒收纳、瞬间整洁、品质生活是夸张的时间与结果承诺；改写为可观察的使用场景（折叠、堆叠、防尘）和低承诺的 calmer room。", "use_case_zh": "TikTok 收纳整理类短视频配文、居家改造前后对比视频", "culture_risk_zh": "一秒、瞬间已移除；品质生活是模糊的阶层暗示，直译显得空洞，已改为具体结果；calmer room 是主观体验描述，不构成效果保证。需核实可折叠、可堆叠、带盖是否与实物一致。"}, "conversion": {"title_en": "Foldable Storage Bins With Lids", "body_en": "Collapsible bins that stack when in use and fold flat when not. Dust covers included, available in several colors. Choose the size that fits your shelf.", "back_translation_zh": "可折叠收纳箱，用时叠放、不用时压平。带防尘盖，多种颜色可选，按架子尺寸挑就行。", "reason_zh": "用可核对的结构与选项（可折叠、可堆叠、带盖、多色）替代夸大承诺，结尾行动引导基于真实选购行为。", "use_case_zh": "TikTok 商品卡、家居好物推荐视频文案", "culture_risk_zh": "颜色数量、尺寸选项、带盖设计需与实物一致；不要写 instantly organized 等结果保证。"}, "concise": {"title_en": "Storage That Folds Flat", "body_en": "Stack it. Fold it. Done.", "back_translation_zh": "能叠、能折，搞定。", "reason_zh": "极短节奏适配 TikTok 字幕与快消品信息流。", "use_case_zh": "TikTok 短视频屏幕字幕、商品标签", "culture_risk_zh": "功能陈述需核实；避免任何瞬间整洁的暗示。"}}}, {"id": "power-bank", "name": "移动电源 · 出行续航", "input": {"original_zh": "超大容量，一充即用，随时满电，出行无忧！", "product_name": "", "product_category": "消费电子 / 移动电源", "product_facts": "10000mAh 容量、USB-C 双向快充、轻便机身、多设备同时充电", "channel": "通用广告", "tone": "专业可信"}, "variants": {"emotional": {"title_en": "Power That Keeps Up With Your Day", "body_en": "A 10000mAh power bank small enough to carry every day. USB-C fast charging in and out, with room to charge two devices at once. Less time looking for an outlet.", "back_translation_zh": "10000mAh 的移动电源，小到可以每天带着走。USB-C 双向快充，还能同时给两台设备充电。少花点时间找插座。", "reason_zh": "中文的随时满电、出行无忧是绝对化结果承诺；改写把超大容量落成具体数值，把无忧降为少找插座的可感知体验。", "use_case_zh": "通用广告图文、出行与通勤场景素材", "culture_risk_zh": "10000mAh、USB-C 双向快充、双设备同时充需与产品规格一致；绝对化表述已移除；航空携带电池容量的法规要求需人工核验，不在文案中做承诺。"}, "conversion": {"title_en": "10000mAh Power Bank, USB-C", "body_en": "10000mAh capacity with USB-C fast charging for both input and output. Charge two devices at the same time. Compact enough for daily carry.", "back_translation_zh": "10000mAh 容量，USB-C 输入输出双向快充，可同时给两台设备充电，体积适合日常携带。", "reason_zh": "规格导向，全部来自产品真实卖点，避免虚构续航时间（会随设备而变）。", "use_case_zh": "通用广告商品描述、电商详情页首屏", "culture_risk_zh": "不要虚构可充 X 次、续航 X 小时等随设备变化的数据；航空携带限制与产品认证需人工核验，不得暗示已通过某项认证。"}, "concise": {"title_en": "10000mAh. USB-C. Daily Carry.", "body_en": "Two devices at once.", "back_translation_zh": "10000mAh、USB-C、日常随身携带，还能同时充两台设备。", "reason_zh": "规格短句并列，适合快速浏览与限字投放位。", "use_case_zh": "限字广告位、商品标题", "culture_risk_zh": "数值需核实；不添加未经证实的认证或续航数据。"}}}]};
 
+/* ===== 85474：统一 API 基址配置 =====
+   本地同源开发：留空字符串 → fetch('/api/...') 走当前域名（历史行为不变）。
+   公网部署：设为独立 HTTPS API 域名，如 https://api.example.com（末尾斜杠由 apiUrl 统一处理）。
+   优先级：window.__API_BASE_URL__（部署/测试注入） > location.origin（同源 http(s)） > ''（file://）。
+   绝不在此写入任何口令、token 或密钥。 */
+const API_BASE_URL = (function(){
+  var v = (typeof window !== 'undefined' && typeof window.__API_BASE_URL__ === 'string')
+    ? window.__API_BASE_URL__
+    : ((location.protocol === 'http:' || location.protocol === 'https:') ? '' : '');
+  return String(v || '').replace(/\/+$/, '');   // 去掉末尾斜杠，统一拼接
+})();
+function apiUrl(path){
+  var p = String(path || '');
+  if (p.charAt(0) !== '/') p = '/' + p;
+  return API_BASE_URL + p;                       // API_BASE_URL='' 时为同源相对路径
+}
+
+/* ===== 85504：评委免口令体验 =====
+   页面不读取、不保存、不发送任何口令或 Token；不写 localStorage/sessionStorage/URL。
+   后端认证门禁保持不动；认证失败时明确提示，绝不伪装成功。 */
 const $ = id => document.getElementById('b-' + id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ORDER = ['emotional', 'conversion', 'concise'];
@@ -810,11 +882,15 @@ function toast(msg){
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1800);
 }
 
+/* 85504：原口令 UI 六态逻辑已整体移除（状态显示、凭证清除、失败分类与提交函数）。
+   前端不再读取、提交或保存任何口令/Token；后端认证门禁保持不变，失败由 generateMock 明确展示。 */
+
 function setMode(kind, note, warn){
   const b = $('mode-badge'), n = $('mode-note');
   b.className = 'mode-badge ' + (kind || 'idle');
   b.textContent = ({preset:'已载入预置案例', reference:'参考案例 · 非实时生成', idle:'等待输入', error:'数据不可用',
     mock:'Mock 模拟数据 · 非 AI 实时生成', loading:'请求中…',
+    pending:'结果未知 · 稍后可用同一请求查询', uncertain:'结果未知 · 未自动重试',
     realsample:'预置 · 真实 Qwen 评测样本（85364）',
     ai:'AI 生成 · 真实模型输出', 'ai-sim':'AI 链路模拟测试 · 非真实 AI 生成'})[kind] || kind;
   n.textContent = note || '';
@@ -835,17 +911,42 @@ function similarity(a, b){
   let inter = 0; A.forEach(g => { if (B.has(g)) inter++; });
   return inter / Math.max(1, A.size + B.size - inter);
 }
+
+/* ===== 85375：输入有效性 + 案例相似度双重保护 =====
+   数据依据见 tests/_measure_similarity_85375.mjs（对 7 组真实案例的实测）：
+   - 纯数字 / 纯符号 / 纯英文 / 空白输入的汉字数 = 0；单汉字缺乏广告语义；
+     >=2 个汉字是有效中文广告文案的最小必要条件。
+   - 无关案例两两文本相似度上限 = 0.08；有效但无关的中文广告 = 0.00；
+     短但相关的中文文案 = 0.125；高相关改写 = 0.2368 / 0.6667。
+   取门槛 0.12：高于所有无关案例上限，低于已验证的相关输入；
+   既避免误展示，也不误伤正常短文案。 */
+const MIN_VALID_HAN = 2;
+const MIN_CASE_SIMILARITY = 0.12;
+function checkInputValidity(raw){
+  const text = String(raw ?? '').trim();
+  if (!text) return { ok:false, msg:'输入为空，请输入有效的中文广告文案。' };
+  const noSpace = text.replace(/\s+/g, '');
+  const han = (noSpace.match(/[\u4e00-\u9fff]/g) || []).length;
+  if (han === 0) return { ok:false, msg:'未检测到中文内容。请输入有效的中文广告文案；纯数字、纯符号、纯英文或无语义内容无法用于案例匹配。' };
+  if (han < MIN_VALID_HAN) return { ok:false, msg:'中文内容过短，请至少输入 2 个汉字。请输入有效的中文广告文案。' };
+  return { ok:true, han:han };
+}
 function findBest(text){
-  let best = null, bestScore = -1;
+  let best = null, bestText = -1, bestBonus = -1;
+  const cat = $('pcat').value.trim(), ch = $('channel').value, tone = $('tone').value;
   for (const c of CASES){
-    let score = similarity(text, c.input.original_zh);
-    const cat = $('pcat').value.trim(), ch = $('channel').value, tone = $('tone').value;
-    if (cat && norm(cat) === norm(c.input.product_category)) score += 0.12;
-    if (ch && ch === c.input.channel) score += 0.08;
-    if (tone && tone === c.input.tone) score += 0.08;
-    if (score > bestScore){ bestScore = score; best = c; }
+    const textScore = similarity(text, c.input.original_zh);
+    let bonus = 0;
+    if (cat && norm(cat) === norm(c.input.product_category)) bonus += 0.12;
+    if (ch && ch === c.input.channel) bonus += 0.08;
+    if (tone && tone === c.input.tone) bonus += 0.08;
+    // 85375 修复：文本相似度为主排序键；表单字段加分仅作同分时的次要 Tie-break，
+    // 不再计入展示百分比，也不参与门槛判定（此前字段加分曾把无语义的 111 凑到 16%）。
+    if (textScore > bestText + 1e-9 || (Math.abs(textScore - bestText) <= 1e-9 && bonus > bestBonus)){
+      bestText = textScore; bestBonus = bonus; best = c;
+    }
   }
-  return { c: best, score: bestScore };
+  return { c: best, textScore: bestText };
 }
 
 function loadCaseIntoForm(c){
@@ -1012,10 +1113,22 @@ async function generateMock(){
   const audience = $('audience').value.trim();
   if (intent) payload.marketing_intent = intent;
   if (audience) payload.target_audience = audience;
+  // 85401: 每次点击生成一个幂等键。同一请求若超时/结果未知，用户可用同一键重试，
+  // 后端据此返回已保存结果或 in_progress，绝不重复调用模型、不重复计费。
+  // 前端超时后不会自动重发；重试必须由用户显式再次点击触发。
   try {
-    const resp = await fetch('/api/generate', {
+    payload.client_run_id = 'run_' + Date.now().toString(36) + '_' +
+      (window.crypto && crypto.randomUUID ? crypto.randomUUID().replace(/-/g,'') :
+       Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2));
+  } catch (_e) {
+    payload.client_run_id = 'run_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2);
+  }
+  try {
+    // 85504：免口令公开体验，不发送任何凭证头；服务端授权只由服务器 env 决定。
+    const headers = { 'Content-Type': 'application/json' };
+    const resp = await fetch(apiUrl('/api/generate'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify(payload),
       signal: API_CTRL ? API_CTRL.signal : undefined,
     });
@@ -1024,6 +1137,11 @@ async function generateMock(){
     catch (e) { throw new Error('服务器返回的不是有效 JSON（HTTP ' + resp.status + '）'); }
     if (!resp.ok){
       const detail = data && (data.detail || data.message);
+      // 85504：认证失败必须明确展示；不伪装成功、不自动重试。
+      if (resp.status === 401){
+        throw new Error('HTTP 401：服务端要求访问凭证，但当前为免口令模式；请联系组织者核对服务端授权配置。' +
+          (typeof detail === 'string' ? '（' + detail + '）' : ''));
+      }
       throw new Error('服务器返回 HTTP ' + resp.status + (detail ? '：' + (typeof detail === 'string' ? detail : JSON.stringify(detail)) : ''));
     }
     // 严格校验：标识矛盾 / 字段缺失 / 结果不完整 → 抛错，不展示为成功
@@ -1045,7 +1163,17 @@ async function generateMock(){
     renderApiResults(data.results);
   } catch (e){
     let msg = '请求失败：' + (e && e.message ? e.message : String(e));
-    if (e && e.name === 'AbortError') msg = '请求超时（超过 ' + (API_TIMEOUT_MS/1000) + ' 秒），请确认本地服务已启动。';
+    if (e && e.name === 'AbortError'){
+      // 85401: 前端超时不等于服务端未执行。绝不自动重发；明确告知"结果未知"，
+      // 由用户决定是否用同一幂等键重试（后端会返回已存结果/in_progress，不重复调用模型）。
+      setMode('uncertain', '请求超时（超过 ' + (API_TIMEOUT_MS/1000) +
+        ' 秒）：服务端可能仍在处理，结果未知。本页不会自动重试；如需查询，请稍后用同样内容再次点击生成。', true);
+      $('err-original').classList.remove('show'); $('original').classList.remove('invalid');
+      $('result-body').innerHTML = '<div class="empty"><b>本次生成结果未知，未自动重试。</b><br>' +
+        '前端已停止等待，但服务端可能仍在执行或已完成。请用相同内容稍后重试；后端会按幂等键返回已保存结果或处理中状态，不会重复调用模型或重复计费。<br>' +
+        '在此之前，本页不显示任何"真实 AI 实时生成"标记。</div>';
+      return;  // 不自动重发；finally 仍会恢复按钮状态
+    }
     else if (e instanceof TypeError) msg = '无法连接本地接口，请确认已启动 uvicorn 并通过 http://127.0.0.1:8000/create 打开本页。';
     apiError(msg);
   } finally {
@@ -1068,6 +1196,15 @@ function generate(){
   }
   $('err-original').classList.remove('show'); $('original').classList.remove('invalid');
 
+  // 85375 保护①：输入有效性门槛。纯数字/纯符号/纯英文/空白等无语义输入在此拦截，
+  // 不进入任何案例匹配，不展示任何案例正文或三套文案。
+  const validity = checkInputValidity(text);
+  if (!validity.ok){
+    setMode('idle', validity.msg + ' 未展示任何参考案例。', false);
+    $('result-body').innerHTML = '<div class="empty"><b>请输入有效的中文广告文案。</b><br>' + esc(validity.msg) + ' 当前为离线参考模式，不会为无语义内容展示不相关案例。</div>';
+    return;
+  }
+
   if (!CASES.length){
     setMode('error', '离线案例数据缺失：本页无法演示，请检查离线案例数据注入。', true);
     $('result-body').innerHTML = '<div class="empty"><b>离线案例不可用。</b><br>本页为纯离线页面，不调用模型；缺少预置案例时无法生成或参考。请确认数据文件已正确注入。</div>';
@@ -1088,9 +1225,17 @@ function generate(){
     return;
   }
 
+  // 85375 保护②：案例相似度门槛。基于纯文本 bigram 相似度（不受表单字段加分影响）。
+  // 未达门槛则明确提示"未找到相关参考案例"，不展示低相关案例的任何标题/正文/回译/理由。
   const best = findBest(text);
-  const pct = Math.round(Math.max(0, Math.min(1, best.score)) * 100);
-  setMode('reference', '当前离线模式没有实时生成能力。未找到完全匹配案例，以下为最相似的参考案例（相似度约 ' + pct + '%），仅作改写思路参考，并非针对您输入的内容生成。', true);
+  if (!best.c || !isFinite(best.textScore) || best.textScore < MIN_CASE_SIMILARITY){
+    const pct = (!best.c || !isFinite(best.textScore)) ? 0 : Math.round(Math.max(0, Math.min(1, best.textScore)) * 100);
+    setMode('idle', '未找到相关参考案例。您输入的文案与预置案例的文本相似度约 ' + pct + '%，低于参考门槛 ' + Math.round(MIN_CASE_SIMILARITY*100) + '%；为避免误导，不展示不相关案例。', false);
+    $('result-body').innerHTML = '<div class="empty"><b>未找到相关参考案例。</b><br>当前输入为离线参考模式，仅在文案与预置案例足够相似时展示参考案例；本页不调用任何模型，也不是针对本次输入的实时生成结果。</div>';
+    return;
+  }
+  const pct = Math.round(Math.max(0, Math.min(1, best.textScore)) * 100);
+  setMode('reference', '当前离线模式没有实时生成能力。未找到完全匹配案例，以下为最相似的参考案例（文本相似度约 ' + pct + '%），仅作改写思路参考，并非针对您输入的内容生成。', true);
   renderVariants(best.c);
 }
 
@@ -1146,6 +1291,7 @@ function init(){
   $('tab-offline').addEventListener('click', () => setUiMode('offline'));
   $('tab-mock').addEventListener('click', () => setUiMode('mock'));
   if (!isHttp){ $('tab-mock').disabled = true; $('tab-mock').title = '需通过本地服务打开 /create'; }
+  // 85504：口令认证 UI 已移除，无需任何按钮或回车绑定。
   $('run').addEventListener('click', generate);
   $('reset').addEventListener('click', () => {
     ['original','pname','pcat','facts','intent','audience'].forEach(id => $(id).value = '');
@@ -1182,10 +1328,13 @@ function switchView(which, updateHash){
     try{ history.replaceState(null, '', isB ? '#create' : '#detect'); }catch(e){}
   }
   if(isB){
+    // 85398（真人验收反馈）：切到 B 后回到页面顶部，优先让用户看到
+    // 「中文原始广告内容 * 必填」输入栏；旧行为滚到 b-result 结果区，
+    // 会让首次使用者误以为 B 没有输入入口。A→B 衔接后也能看到带过去的原文。
     try{
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      document.getElementById('b-result').scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'start'});
-    }catch(e){}
+      window.scrollTo({top:0, left:0, behavior: reduce ? 'auto' : 'smooth'});
+    }catch(e){ window.scrollTo(0,0); }
   }
 }
 // A→B 衔接：纯前端把原文案带入 B 输入框，显示溯源条，切换到 B；不触发生成。
@@ -1221,7 +1370,7 @@ window.STUDIO = {
 </body>
 
 <!-- BUILD_FINGERPRINT
-source:index.html.sha256=96558ef8275dd0dc2b47cc62d30903ddd4f23697efc6a2fcb12287799a415ffe
-source:create.html.sha256=fd6f37722d5c0ba6147df1093232ddef5b4ebffbf5b1caab6e81a8fccddbff55
+source:index.html.sha256=9f68db0f76bdb9bc397e186909ea930283e2ffad662b56f30eb205fdce44d8ed
+source:create.html.sha256=c4cf43e1c50c002928ca10503dc45c3377d95ed03c369923c3fa99f22a7eb38c
 -->
 </html>
