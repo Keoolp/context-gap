@@ -1277,10 +1277,10 @@ function init(){
     $('tab-offline').classList.toggle('active', mode === 'offline');
     $('tab-mock').classList.toggle('active', mode === 'mock');
     $('api-hint').textContent = mode === 'mock'
-      ? '接口联调模式：向同源 POST /api/generate，返回固定 Mock 测试数据，非 AI 实时生成。'
+      ? '接口联调模式：通过页面配置的 API 地址 POST /api/generate，返回固定 Mock 测试数据，非 AI 实时生成。'
       : '离线模式展示预置人工案例，不发起任何网络请求。';
     $('banner-text').innerHTML = mode === 'mock'
-      ? '<b>当前为接口联调模拟模式（Mock），返回的是固定测试数据，并非 AI 实时生成，也不代表理解了本次输入。</b><br>接口地址同源 /api/generate；如需退出，点上方「离线示例模式」。'
+      ? '<b>当前为接口联调模拟模式（Mock），返回的是固定测试数据，并非 AI 实时生成，也不代表理解了本次输入。</b><br>请求经页面配置的 API 地址发往 /api/generate；如需退出，点上方「离线示例模式」。'
       : '<b>当前为离线演示模式，展示的是预置案例，不代表 AI 实时生成结果。</b><br>本页默认不调用任何模型或接口。输入内容只会与本地预置案例匹配；未匹配时会明确提示，并把最相似的案例标注为「参考案例」。';
     $('run').textContent = mode === 'mock' ? '调用 Mock 接口' : '生成本土化文案';
     setMode('idle', mode === 'mock' ? MOCK_NOTICE : '等待输入', mode === 'mock');
@@ -1371,6 +1371,6 @@ window.STUDIO = {
 
 <!-- BUILD_FINGERPRINT
 source:index.html.sha256=9f68db0f76bdb9bc397e186909ea930283e2ffad662b56f30eb205fdce44d8ed
-source:create.html.sha256=c4cf43e1c50c002928ca10503dc45c3377d95ed03c369923c3fa99f22a7eb38c
+source:create.html.sha256=3c3eefcca7af85f6de12db7d4bbf384a82b5cf81b8f7d8f3a00e200e5a248494
 -->
 </html>
